@@ -1,0 +1,65 @@
+<?php
+
+namespace App\Livewire\Dashboard\Order;
+
+use App\Models\Order\Order;
+use App\Notifications\Admin\OrderStatusNotification;
+use App\Service\Dashboard\Order\RefundOrderItemService;
+use Livewire\Attributes\Title;
+use Livewire\Component;
+
+class OrderShow extends Component
+{
+    public $order;
+
+    public $status;
+
+    public function mount($id)
+    {
+        $this->order = Order::with(['branch', 'customer', 'items.product', 'items.size'])->findOrFail($id);
+
+        $this->status = $this->order->status;
+    }
+
+    #[Title('Order Details')]
+    public function render()
+    {
+        return view('livewire.dashboard.order.product-order-show');
+    }
+
+    public function updateStatus()
+    {
+        $this->order->status = $this->status;
+
+        $this->order->save();
+
+        $customer = $this->order->customer;
+
+        $customer->notify(new OrderStatusNotification($this->status));
+
+        request()->session()->flash('success', __('Status updated successfully'));
+
+        $this->redirect('/dashboard/order/show/' . $this->order->id, navigate: true);
+    }
+
+    public function refundItem($itemId)
+    {
+        $item = $this->order->items->firstWhere('id', $itemId);
+
+        if (!$item) {
+            request()->session()->flash('error', __('Item not found'));
+            return;
+        }
+
+        $service = new RefundOrderItemService();
+        $result  = $service->refund($this->order, $item);
+
+        if ($result['success']) {
+            // Refresh order after refund
+            $this->order = Order::with(['branch', 'customer', 'items.product', 'items.size'])->findOrFail($this->order->id);
+            request()->session()->flash('success', $result['message']);
+        } else {
+            request()->session()->flash('error', $result['message']);
+        }
+    }
+}

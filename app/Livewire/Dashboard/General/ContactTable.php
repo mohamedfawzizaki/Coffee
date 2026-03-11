@@ -1,0 +1,86 @@
+<?php
+
+namespace App\Livewire\Dashboard\General;
+
+use App\Enums\ContactStatus;
+use App\Livewire\Dashboard\BaseTable;
+use App\Models\Customer\Customer;
+use App\Models\General\Contact;
+use Illuminate\Database\Eloquent\Builder;
+use Illuminate\Support\Str;
+use Rappasoft\LaravelLivewireTables\Views\Column;
+
+class ContactTable extends BaseTable
+{
+    public $model = Contact::class;
+
+    protected $actionDisplay = ['show', 'delete'];
+
+    protected $route = 'dashboard.contact';
+
+    public function builder(): Builder
+    {
+
+        return Contact::query()
+            ->when($this->getAppliedFilterWithValue('status') || $this->getAppliedFilterWithValue('status') == '0', function ($query) {
+                $query->whereStatus($this->getAppliedFilterWithValue('status'));
+            })
+            ->when($this->getAppliedFilterWithValue('createdAt'), function ($query) {
+                $query->whereBetween('created_at', [Str::before($this->getAppliedFilterWithValue('createdAt'), ' - ') . ' 00:00:00', Str::after($this->getAppliedFilterWithValue('createdAt'), ' - ') . ' 23:59:59']);
+            });
+    }
+
+    public function columns(): array
+    {
+        return [
+
+            Column::make(__('ID'), 'id')->searchable()->sortable(),
+
+            Column::make(__('Customer'), 'customer_id')
+                ->format(function ($value, $column, $row) {
+                    if($column->customer){
+                        return $this->nameWithAvatar($column->customer->name, $column->customer->image, '/dashboard/customer/show/'.$column->customer->id);
+                    }
+                    return __('Deleted Customer');
+                })
+                ->html()
+                ->searchable(function (Builder $builder, $term) {
+                    $builder->orWhereHas('customer', function ($query) use ($term) {
+                        $query->where('name', 'like', '%' . $term . '%');
+                    });
+                })
+                ->sortable(),
+
+            Column::make(__('Phone'), 'customer_id')
+                ->format(function ($value, $column, $row) {
+                    return $column->customer->phone ?? '-';
+                })
+                ->searchable(function (Builder $builder, $term) {
+                    $builder->orWhereHas('customer', function ($query) use ($term) {
+                        $query->where('phone', 'like', '%' . $term . '%');
+                    });
+                })
+                ->sortable(),
+
+            Column::make(__('Title'), 'title')->searchable()->sortable(),
+
+            Column::make(__('Message'), 'message')->searchable()->sortable(),
+
+            Column::make(__('Created At'), 'created_at')->format(function ($value, $column, $row) {
+                return $column->created_at->format('d-m-Y');
+            })->html()->searchable()->sortable(),
+
+            Column::make(__('Action'), 'id')
+                ->html()
+                ->format(function ($value, $column, $row) {
+                    return $this->action($column);
+                }),
+        ];
+    }
+
+    public function render(): \Illuminate\Contracts\Foundation\Application|\Illuminate\Contracts\View\Factory|\Illuminate\Contracts\View\View
+    {
+        return view('livewire.dashboard.general.contact-table');
+    }
+}
+
