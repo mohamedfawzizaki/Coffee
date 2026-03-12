@@ -7,6 +7,7 @@ use App\Models\Customer\Customer;
 use App\Models\CustomerCard\CustomerCard;
 use App\Models\Order\Order;
 use App\Notifications\Customer\NewOrderNotification;
+use App\Notifications\Customer\OrderStatusNotification; // Added this import
 use App\Traits\QR;
 use Illuminate\Support\Facades\Log;
 
@@ -31,6 +32,8 @@ class OrderObserver
 
             $customer_orders_count = Order::where('customer_id', $order->customer_id)
                 ->where('created_at', '>=', now()->subDays(30))
+                ->where('status', '!=', 'cancelled')
+                ->where('type', '!=', 'point')
                 ->count();
 
             $card = CustomerCard::where('orders_count', '<=', $customer_orders_count)
@@ -70,32 +73,51 @@ class OrderObserver
      */
     public function updated(Order $order): void
     {
+        $status   = $order->status;
+        $customer = null;
 
+        // Only notify on meaningful status changes
+        $notifiableStatuses = ['preparing', 'prepared', 'ready', 'cancelled'];
 
-        if ($order->status == 'cancelled') {
+        if ($order->isDirty('status') && in_array($status, $notifiableStatuses)) {
+
+            // Notify the original customer
             $customer = Customer::find($order->customer_id);
-
-            if (!$customer) {
-                return;
+            if ($customer) {
+                $customer->notify(new OrderStatusNotification($order, $status));
             }
 
-            $customerCard = CustomerCard::find($customer->card_id);
+            // Notify the gift recipient (send_to) if different from the original customer
+            $sendTo = Customer::find($order->send_to);
+            if ($sendTo && optional($customer)->id !== $sendTo->id) {
+                $sendTo->notify(new OrderStatusNotification($order, $status));
+            }
+        }
 
-            if ($customerCard) {
+        // Loyalty card recalculation on cancellation
+        if ($status === 'cancelled') {
+            $customer = $customer ?? Customer::find($order->customer_id);
 
-                $customer_orders_count = Order::where('customer_id', $order->customer_id)
-                    ->where('created_at', '>=', now()->subDays(30))
-                    ->count();
+            if ($customer) {
+                $customerCard = CustomerCard::find($customer->card_id);
 
-                $card = CustomerCard::where('orders_count', '<=', $customer_orders_count)
-                    ->orderBy('orders_count', 'desc')
-                    ->first();
+                if ($customerCard) {
 
-                if ($card && $card->id !== $customerCard->id) {
+                    $customer_orders_count = Order::where('customer_id', $order->customer_id)
+                        ->where('created_at', '>=', now()->subDays(30))
+                        ->where('status', '!=', 'cancelled')
+                        ->where('type', '!=', 'point')
+                        ->count();
 
-                    $customer->update([
-                        'card_id' => $card->id,
-                    ]);
+                    $card = CustomerCard::where('orders_count', '<=', $customer_orders_count)
+                        ->orderBy('orders_count', 'desc')
+                        ->first();
+
+                    if ($card && $card->id !== $customerCard->id) {
+                        $customer->update([
+                            'card_id' => $card->id,
+                        ]);
+                    }
                 }
             }
         }

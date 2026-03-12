@@ -13,7 +13,6 @@ class NoonPaymentController extends Controller
 
     public function index()
     {
-        dd(request()->all());
         $order = Order::first();
 
         $response = $this->noonPaymentService->initiatePayment($order, request());
