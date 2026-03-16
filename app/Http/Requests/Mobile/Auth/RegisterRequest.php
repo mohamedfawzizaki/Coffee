@@ -25,7 +25,7 @@ class RegisterRequest extends FormRequest
             'name'     => 'required|min:3|max:255',
             'phone'    => 'required|min:10|max:15|unique:customers,phone',
             'email'    => 'nullable|email|unique:customers,email',
-            'birthday' => 'required|date_format:Y-m-d|before:' . now()->subYears(7)->toDateString(),
+            'birthday' => 'nullable|date_format:Y-m-d|before:' . now()->subYears(7)->toDateString(),
         ];
 
     }
