@@ -51,6 +51,7 @@ class PointOrderTable extends BaseTable
                     }
                     return '-';
                 })
+                ->html()
                 ->searchable(function (Builder $builder, $term) {
                     $builder->orWhereHas('customer', function ($query) use ($term) {
                         $query->where('name', 'like', '%' . $term . '%');

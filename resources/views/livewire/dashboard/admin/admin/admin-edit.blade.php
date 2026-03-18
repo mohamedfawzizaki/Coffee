@@ -49,6 +49,7 @@
                             <div class="mb-3">
                                 <label for="category-title" class="form-label">@lang('Role')</label>
                                 <select class="form-control" wire:model="role_id">
+                                    <option value="">@lang('Select Role')</option>
                                     @foreach ($roles as $role)
                                         <option @if ($role->id == $this->role_id) selected @endif
                                             value="{{ $role->id }}">{{ $role->name }}</option>

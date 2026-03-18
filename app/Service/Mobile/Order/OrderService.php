@@ -114,6 +114,14 @@ class OrderService
                     'payment_url' => $payment_response
                 ]);
 
+        } elseif($payment_method == 'points'){
+
+            if ($this->customer->points < $cart->grand_total) {
+                return $this->error(__('Insufficient Points'));
+            }
+
+            return $this->createOrderService->createOrder($cart, $this->customer, 'points', $request);
+
         } else{
 
              $payment_response = $this->noonPaymentService->initiatePayment($cart, $request);

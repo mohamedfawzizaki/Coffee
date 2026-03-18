@@ -52,7 +52,6 @@ class AdminCreate extends Component
         'name'     => $this->name,
         'email'    => $this->email,
         'password' => bcrypt($this->password),
-        'role_id'  => $this->role_id,
         'image'    => $image,
        ]);
 

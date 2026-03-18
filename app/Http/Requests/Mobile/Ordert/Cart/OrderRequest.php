@@ -23,7 +23,7 @@ class OrderRequest extends FormRequest
     {
         return [
             'place'          => 'required|in:branch,car',
-            'payment_method' => 'required|in:cash,visa,wallet,visa-wallet',
+            'payment_method' => 'required|in:cash,visa,wallet,visa-wallet,points',
             'note'           => 'nullable|string',
             'car_details'    => 'required_if:place,car',
             // 'type'           => 'required|in:order,gift,point',

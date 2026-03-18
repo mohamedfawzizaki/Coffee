@@ -19,7 +19,9 @@ class RoleTable extends BaseTable
     public function builder(): Builder
     {
 
+        $userRoles = auth('admin')->user()->roles()->pluck('id')->toArray();
         return Role::query()->where('id', '!=', 1)
+            ->whereNotIn('id', $userRoles)
             ->when($this->getAppliedFilterWithValue('status') || $this->getAppliedFilterWithValue('status') == '0', function ($query) {
                 $query->whereStatus($this->getAppliedFilterWithValue('status'));
             })

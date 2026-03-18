@@ -318,7 +318,7 @@ class BaseTable extends DataTableComponent
     public function deleteConfirmed($id)
     {
         if (isset($this->model)) {
-            $this->model::find($id)->delete();
+            $this->model::withoutGlobalScopes()->find($id)->delete();
             session()->flash('success', __('Deleted successfully'));
         } else {
             session()->flash('error', __('Model not defined'));
@@ -382,7 +382,7 @@ class BaseTable extends DataTableComponent
     public function toggleStatus($id)
     {
         try {
-            $record = $this->model::findOrFail($id);
+            $record = $this->model::withoutGlobalScopes()->findOrFail($id);
             $newStatus = !$record->status;
             $record->status = $newStatus;
 

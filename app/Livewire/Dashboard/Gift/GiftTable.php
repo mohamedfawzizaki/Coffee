@@ -48,14 +48,35 @@ class GiftTable extends BaseTable
                 ->format(function ($value, $column, $row) {
                     return $this->nameWithImage($column->customer->name, $column->customer->image, $column->customer->id, 'dashboard.customer');
                 })
-                ->searchable()
+                ->html()
+                ->searchable(function (Builder $builder, $term) {
+                    $builder->orWhereHas('customer', function ($query) use ($term) {
+                        $query->where('name', 'like', '%' . $term . '%');
+                    });
+                })
+                ->sortable(),
+
+            Column::make(__('Phone'), 'customer_id')
+                ->format(function ($value, $column, $row) {
+                    return $column->customer->phone ?? '-';
+                })
+                ->searchable(function (Builder $builder, $term) {
+                    $builder->orWhereHas('customer', function ($query) use ($term) {
+                        $query->where('phone', 'like', '%' . $term . '%');
+                    });
+                })
                 ->sortable(),
 
             Column::make(__('Send To'), 'send_to')
                 ->format(function ($value, $column, $row) {
                     return $this->nameWithImage($column->sendTo->name, $column->sendTo->image, $column->sendTo->id, 'dashboard.customer');
                 })
-                ->searchable()
+                ->html()
+                ->searchable(function (Builder $builder, $term) {
+                    $builder->orWhereHas('sendTo', function ($query) use ($term) {
+                        $query->where('name', 'like', '%' . $term . '%');
+                    });
+                })
                 ->sortable(),
 
             Column::make(__('Branch'), 'branch_id')

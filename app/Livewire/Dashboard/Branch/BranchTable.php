@@ -18,7 +18,7 @@ class BranchTable extends BaseTable
 
     public function builder(): Builder
     {
-        return $this->model::query()->withTranslation()
+        return $this->model::query()->withoutGlobalScope('active')->withTranslation()
             ->when($this->getAppliedFilterWithValue('status') !== null, function ($query) {
                 $query->where('status', $this->getAppliedFilterWithValue('status'));
             })

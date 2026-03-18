@@ -24,7 +24,7 @@ class Order extends Model
         'status', 'customer_id', 'branch_id', 'total', 'notes',
         'delivery_address', 'delivery_phone', 'send_to', 'manager_id',
         'admin_id', 'coupon_id', 'product_id',
-        'grand_total', 'discount', 'tax', 'points', 'payment_method', 'payment_status', 'payment_id', 'note', 'lat', 'lng', 'place', 'created_by', 'title', 'message', 'car_details'
+        'grand_total', 'discount', 'tax', 'points', 'payment_method', 'payment_status', 'payment_id', 'note', 'lat', 'lng', 'place', 'created_by', 'title', 'message', 'car_details', 'type'
     ];
 
     // Performance optimization - define fields that need casting

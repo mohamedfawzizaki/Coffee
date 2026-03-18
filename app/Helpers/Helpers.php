@@ -12,17 +12,21 @@ use Illuminate\Support\Facades\Auth;
 
 function roleModel()
 {
-      $roles =  config('laratrust_seeder.roles_structure.superadmin');
+    $roles = config('laratrust_seeder.roles_structure.superadmin');
 
-        $roleModel = [];
+    $roleModel = [];
 
-        foreach ($roles as $key => $value) {
-
-            $roleModel[] = $key;
-
+    foreach ($roles as $key => $value) {
+        if ($key == 'admin') {
+            if (auth('admin')->check() && auth('admin')->user()->email == 'admin@syntech.com') {
+                $roleModel[] = $key;
+            }
+            continue;
         }
+        $roleModel[] = $key;
+    }
 
-        return $roleModel;
+    return $roleModel;
 }
 
 

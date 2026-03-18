@@ -68,15 +68,14 @@
                                             @foreach ($actions as $map)
                                                 <div class="col-md-12">
 
-                                                    <button type="button"
-                                                        class="list-group-item list-group-item-action">
+                                                    <div class="list-group-item list-group-item-action">
 
                                                         <input type="checkbox" id="{{ $permission . '-' . $map }}"
                                                             name="permissions[]" class="custom-switch-input"
                                                             wire:model="permissions.{{ $permission }}.{{ $map }}">
                                                         <label for="{{ $permission . '-' . $map }}"
                                                             class="custom-switch-description"> @lang($map)</label>
-                                                    </button>
+                                                    </div>
 
                                                 </div>
                                             @endforeach

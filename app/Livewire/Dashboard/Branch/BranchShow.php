@@ -74,7 +74,7 @@ class BranchShow extends Component
 
     public function mount($id)
     {
-        $this->branch = Branch::with(['tabletManager'])->find($id);
+        $this->branch = Branch::withoutGlobalScope('active')->with(['tabletManager'])->find($id);
 
         // Load active tab from session
         $this->activeTab = session('branch_active_tab', 'general');

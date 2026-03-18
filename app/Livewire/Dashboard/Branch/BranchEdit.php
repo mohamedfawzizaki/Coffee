@@ -36,7 +36,7 @@ class BranchEdit extends Component
 
     public function mount($id)
     {
-        $branch = Branch::findOrFail($id);
+        $branch = Branch::withoutGlobalScope('active')->findOrFail($id);
 
         $this->branchId = $branch->id;
         // Use safe translation reads (avoid empty form when translation row is missing)
@@ -72,7 +72,7 @@ class BranchEdit extends Component
             'lng'      => 'required|numeric',
         ]);
 
-        $branch = Branch::findOrFail($this->branchId);
+        $branch = Branch::withoutGlobalScope('active')->findOrFail($this->branchId);
 
         $branch->translateOrNew('ar')->title = $this->ar['title'];
         $branch->translateOrNew('en')->title = $this->en['title'];

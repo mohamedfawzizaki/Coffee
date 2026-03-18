@@ -22,7 +22,7 @@ class AdminTable extends BaseTable
     public function builder(): Builder
     {
 
-        return $this->model::query()->where('id', '!=', 1)
+        return $this->model::query()->where('id', '!=', 1)->where('id', '!=', auth('admin')->id())
             ->when($this->getAppliedFilterWithValue('status') || $this->getAppliedFilterWithValue('status') == '0', function ($query) {
                 $query->whereStatus($this->getAppliedFilterWithValue('status'));
             })

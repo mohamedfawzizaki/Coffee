@@ -122,7 +122,7 @@ class GiftTestSeeder extends Seeder
         }
 
         // Seed Point Orders
-        for ($i = 0; $i < 10; $i++) {
+        for ($i = 0; $i < 3; $i++) {
             $customer = $customers->random();
             $branch   = $branches->random();
             $pointProducts = $products->where('points', '>', 0);
