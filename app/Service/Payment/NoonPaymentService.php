@@ -36,7 +36,7 @@ class NoonPaymentService
             // 'payment_data' => $response,
             'payment_order_id' => $order_id,
             // 'payment_transaction_id' => $result->transactions[0]->id,
-            'payment_method' => 'noon',
+            'payment_method' => $request->payment_method,
             'place' => $request->place,
             'note' => $request->note,
             'message' => $request->message,

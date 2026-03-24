@@ -164,7 +164,7 @@ class MarketingIndex extends Component
     {
         $query = $this->targetCustomersQuery();
 
-        $query->select(['id'])->chunkById(500, function ($customers) {
+        $query->select(['id', 'device_token'])->chunkById(500, function ($customers) {
             foreach ($customers as $customer) {
                 $customer->notify(new MarketingNotification($this->title, $this->content));
             }
