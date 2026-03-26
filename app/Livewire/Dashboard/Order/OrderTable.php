@@ -12,6 +12,7 @@ use Rappasoft\LaravelLivewireTables\Views\Filters\SelectFilter;
 
 class OrderTable extends BaseTable
 {
+    protected $permissionName = 'order';
     protected $actionDisplay = ['show', 'delete', 'edit'];
 
     protected $route         = 'dashboard.order';

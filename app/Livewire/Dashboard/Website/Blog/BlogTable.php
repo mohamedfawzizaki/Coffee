@@ -9,6 +9,7 @@ use Rappasoft\LaravelLivewireTables\Views\Column;
 
 class BlogTable extends BaseTable
 {
+    protected $permissionName = 'blog';
     protected $actionDisplay = ['edit', 'delete', 'show'];
 
     protected $route = 'dashboard.blog';

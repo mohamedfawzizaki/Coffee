@@ -11,6 +11,7 @@ use Rappasoft\LaravelLivewireTables\Views\Column;
 
 class StoreWalletTable extends BaseTable
 {
+    protected $permissionName = 'finance';
     protected $actionDisplay = ['show', 'delete'];
 
     protected $route         = 'dashboard.customer';

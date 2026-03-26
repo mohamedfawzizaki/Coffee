@@ -12,6 +12,7 @@ use Rappasoft\LaravelLivewireTables\Views\Column;
 class RoleTable extends BaseTable
 {
     protected $actionDisplay = ['delete', 'edit'];
+    protected $permissionName = 'role';
 
     protected $route = 'dashboard.role';
     protected $model = Role::class;

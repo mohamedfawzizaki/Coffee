@@ -10,6 +10,7 @@ use Rappasoft\LaravelLivewireTables\Views\Column;
 
 class BranchTable extends BaseTable
 {
+    protected $permissionName = 'setting';
     protected $actionDisplay = ['show', 'edit'];
 
     protected $route         = 'dashboard.branch';

@@ -14,6 +14,7 @@ use Rappasoft\LaravelLivewireTables\Views\Filters\DateFilter;
 class AdminTable extends BaseTable
 {
     protected $actionDisplay = ['delete', 'edit'];
+    protected $permissionName = 'admin';
 
     protected $route = 'dashboard.admin';
 

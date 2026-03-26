@@ -10,6 +10,7 @@ use Rappasoft\LaravelLivewireTables\Views\Column;
 
 class CustomerTable extends BaseTable
 {
+    protected $permissionName = 'customer';
     protected $actionDisplay = ['show', 'delete', 'edit'];
 
     protected $route         = 'dashboard.customer';

@@ -10,6 +10,7 @@ use Rappasoft\LaravelLivewireTables\Views\Column;
 
 class PosMangerTable extends BaseTable
 {
+    protected $permissionName = 'setting';
     protected $actionDisplay = ['edit', 'delete'];
 
     protected $route = 'dashboard.posmanager';

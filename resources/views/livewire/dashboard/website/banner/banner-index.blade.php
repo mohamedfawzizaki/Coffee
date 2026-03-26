@@ -20,9 +20,11 @@
                 <div class="card">
                     <div class="card-header">
                         <div class="d-flex align-items-center flex-wrap gap-2">
+                            @if(auth('admin')->id() == 1 || auth('admin')->user()->isAbleTo('create-marketing'))
                             <a href="{{ route('dashboard.banner.create') }}" class="btn btn-primary add-btn" wire:navigate>
                                 <i class="ri-add-fill me-1 align-bottom"></i> @lang('Add Banner')
                             </a>
+                            @endif
                         </div>
                     </div>
                 </div>

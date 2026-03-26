@@ -10,6 +10,7 @@ use Rappasoft\LaravelLivewireTables\Views\Column;
 
 class PcategoryTable extends BaseTable
 {
+    protected $permissionName = 'product';
     protected $actionDisplay = ['edit', 'delete'];
 
     protected $route = 'dashboard.category';

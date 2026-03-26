@@ -18,6 +18,7 @@ use Rappasoft\LaravelLivewireTables\Views\Filters\DateRangeFilter;
 class BaseTable extends DataTableComponent
 {
     protected $actionDisplay = ['show', 'edit', 'delete'];
+    protected $permissionName = null;
 
     public $enableBulk = true, $orderBy = 'id', $orderType = 'desc', $dbSelect = true;
 
@@ -139,31 +140,42 @@ class BaseTable extends DataTableComponent
             return;
         }
 
+        $user = auth('admin')->user();
+        $isSuperAdmin = $user->id == 1;
+
         if (in_array('show', $this->actionDisplay)) {
-            $content .= view('inc.script.livewire.show')->with([
-                'route' => $this->route,
-                'id'    => $query->id,
-            ]);
+            if ($isSuperAdmin || !$this->permissionName || $user->isAbleTo('read-' . $this->permissionName)) {
+                $content .= view('inc.script.livewire.show')->with([
+                    'route' => $this->route,
+                    'id'    => $query->id,
+                ]);
+            }
         }
         if (in_array('edit', $this->actionDisplay)) {
-            $content .= view('inc.script.livewire.edit')->with([
-                'route' => $this->route,
-                'id' => $query->id,
-            ]);
+            if ($isSuperAdmin || !$this->permissionName || $user->isAbleTo('update-' . $this->permissionName)) {
+                $content .= view('inc.script.livewire.edit')->with([
+                    'route' => $this->route,
+                    'id' => $query->id,
+                ]);
+            }
         }
 
         if (in_array('delete', $this->actionDisplay)) {
-            $content .= view('inc.script.livewire.delete')->with([
-                'route' => $this->route,
-                'id'   => $query->id,
-            ]);
+            if ($isSuperAdmin || !$this->permissionName || $user->isAbleTo('delete-' . $this->permissionName)) {
+                $content .= view('inc.script.livewire.delete')->with([
+                    'route' => $this->route,
+                    'id'   => $query->id,
+                ]);
+            }
         }
 
         if (in_array('restore', $this->actionDisplay)) {
-            $content .= view('inc.script.livewire.restore')->with([
-                'route' => $this->route,
-                'id'    => $query->id,
-            ]);
+            if ($isSuperAdmin || !$this->permissionName || $user->isAbleTo('update-' . $this->permissionName)) {
+                $content .= view('inc.script.livewire.restore')->with([
+                    'route' => $this->route,
+                    'id'    => $query->id,
+                ]);
+            }
         }
 
 

@@ -25,7 +25,9 @@
                                         <span class="fw-semibold fs-16 me-1">@lang('Admins')</span>
                                     </div>
                                     <div class="d-flex flex-wrap gap-2">
-                                        <a href="{{ route('dashboard.admin.create') }}" class="btn btn-primary btn-sm" wire:navigate><i class="ri-add-line me-1 fw-semibold align-middle" ></i> @lang('Create Admin')  </a>
+                                        @if(auth('admin')->id() == 1 || auth('admin')->user()->isAbleTo('create-admin'))
+                                        <a href="{{ route('dashboard.admin.create') }}" class="btn btn-primary btn-sm" wire:navigate><i class="ri-add-line me-1| fw-semibold align-middle" ></i> @lang('Create Admin')  </a>
+                                        @endif
                                 </div>
                             </div>
                         </div>

@@ -10,6 +10,7 @@ use Rappasoft\LaravelLivewireTables\Views\Column;
 
 class BannerTable extends BaseTable
 {
+    protected $permissionName = 'marketing';
     protected $actionDisplay = ['edit', 'delete'];
 
     protected $route = 'dashboard.banner';

@@ -10,6 +10,7 @@ use Rappasoft\LaravelLivewireTables\Views\Column;
 
 class GiftTransferTable extends BaseTable
 {
+    protected $permissionName = 'marketing';
     public $enableBulk = false;
 
     protected $actionDisplay = [];

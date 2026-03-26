@@ -23,12 +23,14 @@
                     <div class="table-responsive table-card mb-3">
 
                         <div class="d-flex align-items-center justify-content-end gap-2 mb-3">
+                            @if(auth('admin')->id() == 1 || auth('admin')->user()->isAbleTo('create-setting'))
                             <a href="https://app.coffematics.com/webhook/branches"
                                class="btn btn-success"
                                target="_blank"
                                rel="noopener noreferrer">
                                 @lang('استيراد الفروع من فوديكس')
                             </a>
+                            @endif
                         </div>
 
                         <livewire:dashboard.branch.branch-table theme="bootstrap-5" />

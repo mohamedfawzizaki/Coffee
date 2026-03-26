@@ -13,6 +13,7 @@ use Rappasoft\LaravelLivewireTables\Views\Filters\SelectFilter;
 
 class GiftTable extends BaseTable
 {
+    protected $permissionName = 'marketing';
     protected $actionDisplay = ['show', 'delete'];
 
     protected $route         = 'dashboard.gift';

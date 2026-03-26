@@ -12,6 +12,7 @@ use Rappasoft\LaravelLivewireTables\Views\Filters\SelectFilter;
 
 class CouponTable extends BaseTable
 {
+    protected $permissionName = 'finance';
     protected $actionDisplay = ['edit', 'delete'];
 
     protected $route = 'dashboard.coupon';

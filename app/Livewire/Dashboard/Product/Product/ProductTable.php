@@ -13,6 +13,7 @@ use Rappasoft\LaravelLivewireTables\Views\Filters\SelectFilter;
 
 class ProductTable extends BaseTable
 {
+    protected $permissionName = 'product';
     protected $actionDisplay = ['show', 'edit', 'delete'];
 
     protected $route = 'dashboard.product';
