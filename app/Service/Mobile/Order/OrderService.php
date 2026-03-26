@@ -57,6 +57,10 @@ class OrderService
             return $this->error(__('Branch not found'));
         }
 
+        if($branch->status == 0){
+            return $this->error(__('Branch is not active'));
+        }
+
         $openStatus = canOrder($branch->id);
 
         if(!$openStatus){
