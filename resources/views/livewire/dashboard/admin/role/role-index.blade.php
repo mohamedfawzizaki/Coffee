@@ -25,7 +25,7 @@
                                     <span class="fw-semibold fs-16 me-1">@lang('Roles')</span>
                                  </div>
                                 <div class="d-flex flex-wrap gap-2">
-                                    @if(auth('admin')->id() == 1 || auth('admin')->user()->isAbleTo('create-role'))
+                                    @if(auth('admin')->id() == 1 || auth('admin')->user()->isAbleTo('role-create'))
                                     <a  href="{{ route('dashboard.role.create') }}" class="btn btn-primary btn-sm" wire:navigate>
                                         <i class="ri-add-line me-1 fw-semibold align-middle"></i>
                                         @lang('Add New Role')

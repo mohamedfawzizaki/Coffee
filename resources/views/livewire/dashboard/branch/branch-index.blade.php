@@ -23,7 +23,7 @@
                     <div class="table-responsive table-card mb-3">
 
                         <div class="d-flex align-items-center justify-content-end gap-2 mb-3">
-                            @if(auth('admin')->id() == 1 || auth('admin')->user()->isAbleTo('create-setting'))
+                            @if(auth('admin')->id() == 1 || auth('admin')->user()->isAbleTo('setting-create'))
                             <a href="https://app.coffematics.com/webhook/branches"
                                class="btn btn-success"
                                target="_blank"

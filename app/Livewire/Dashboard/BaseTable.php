@@ -144,7 +144,7 @@ class BaseTable extends DataTableComponent
         $isSuperAdmin = $user->id == 1;
 
         if (in_array('show', $this->actionDisplay)) {
-            if ($isSuperAdmin || !$this->permissionName || $user->isAbleTo('read-' . $this->permissionName)) {
+            if ($isSuperAdmin || !$this->permissionName || $user->isAbleTo($this->permissionName . '-read')) {
                 $content .= view('inc.script.livewire.show')->with([
                     'route' => $this->route,
                     'id'    => $query->id,
@@ -152,7 +152,7 @@ class BaseTable extends DataTableComponent
             }
         }
         if (in_array('edit', $this->actionDisplay)) {
-            if ($isSuperAdmin || !$this->permissionName || $user->isAbleTo('update-' . $this->permissionName)) {
+            if ($isSuperAdmin || !$this->permissionName || $user->isAbleTo($this->permissionName . '-update')) {
                 $content .= view('inc.script.livewire.edit')->with([
                     'route' => $this->route,
                     'id' => $query->id,
@@ -161,7 +161,7 @@ class BaseTable extends DataTableComponent
         }
 
         if (in_array('delete', $this->actionDisplay)) {
-            if ($isSuperAdmin || !$this->permissionName || $user->isAbleTo('delete-' . $this->permissionName)) {
+            if ($isSuperAdmin || !$this->permissionName || $user->isAbleTo($this->permissionName . '-delete')) {
                 $content .= view('inc.script.livewire.delete')->with([
                     'route' => $this->route,
                     'id'   => $query->id,
@@ -170,7 +170,7 @@ class BaseTable extends DataTableComponent
         }
 
         if (in_array('restore', $this->actionDisplay)) {
-            if ($isSuperAdmin || !$this->permissionName || $user->isAbleTo('update-' . $this->permissionName)) {
+            if ($isSuperAdmin || !$this->permissionName || $user->isAbleTo($this->permissionName . '-update')) {
                 $content .= view('inc.script.livewire.restore')->with([
                     'route' => $this->route,
                     'id'    => $query->id,
