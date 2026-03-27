@@ -254,6 +254,7 @@
                             <select class="form-select" id="statuss" name="status" wire:model="status">
                                 <option value="pending" {{ $order->status == 'pending' ? 'selected' : '' }}>@lang('Pending')</option>
                                 <option value="processing" {{ $order->status == 'processing' ? 'selected' : '' }}>@lang('Processing')</option>
+                                <option value="ready" {{ $order->status == 'ready' ? 'selected' : '' }}>@lang('Ready')</option>
                                 <option value="completed" {{ $order->status == 'completed' ? 'selected' : '' }}>@lang('Completed')</option>
                                 <option value="cancelled" {{ $order->status == 'cancelled' ? 'selected' : '' }}>@lang('Cancelled')</option>
                             </select>

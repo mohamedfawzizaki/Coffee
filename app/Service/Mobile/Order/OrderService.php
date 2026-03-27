@@ -51,19 +51,17 @@ class OrderService
 
         /* Check if the branch is open */
 
-        $branch = Branch::find($cart->branch_id);
+        $branch = Branch::withoutGlobalScope('active')->find($cart->branch_id);
 
         if(!$branch){
             return $this->error(__('Branch not found'));
         }
 
-        if($branch->status == 0){
+        if ($branch->status == 0) {
             return $this->error(__('Branch is not active'));
         }
 
-        $openStatus = canOrder($branch->id);
-
-        if(!$openStatus){
+        if(!$branch->isOpen()){
             return $this->error(__('Branch is closed'));
         }
 

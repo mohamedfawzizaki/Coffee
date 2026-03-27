@@ -8,7 +8,6 @@ use App\Http\Controllers\Controller;
 use App\Models\Customer\CustomerPoint;
 use App\Models\Order\Gift\GiftOrder;
 use App\Models\Order\Order;
-use App\Notifications\Cashier\OrderStatusNotification;
 use Illuminate\Http\Request;
 
 class OrderController extends Controller
@@ -26,9 +25,6 @@ class OrderController extends Controller
 
         $order->update(['status' => 'processing']);
 
-        // Send notification asynchronously
-        $order->customer->notify(new OrderStatusNotification($order, 'confirmed'));
-
         return $this->success(__('Order confirmed'));
     }
 
@@ -45,9 +41,6 @@ class OrderController extends Controller
 
         $order->update(['status' => 'ready']);
 
-        // Send notification asynchronously
-        $order->customer->notify(new OrderStatusNotification($order, 'ready'));
-
         return $this->success(__('Order ready'));
     }
 
@@ -63,9 +56,6 @@ class OrderController extends Controller
         if($order->status != 'ready') { return $this->error(__('Order is not ready')); }
 
         $order->update(['status' => 'completed']);
-
-        // Send notification asynchronously
-        $order->customer->notify(new OrderStatusNotification($order, 'completed'));
 
         return $this->success(__('Order completed'));
     }
@@ -85,8 +75,7 @@ class OrderController extends Controller
         
         $order->update(['status' => 'cancelled']);
 
-        // Send notification asynchronously
-        $order->customer->notify(new OrderStatusNotification($order, 'cancelled'));
+        return $this->success(__('Order cancelled'));
 
         // delete CustomerPoint
         try {

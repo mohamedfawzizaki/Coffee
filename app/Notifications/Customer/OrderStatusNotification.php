@@ -43,14 +43,11 @@ class OrderStatusNotification extends Notification
                     ->line('Thank you for using our application!');
     }
 
-    /**
-     * Get the array representation of the notification.
-     *
-     * @return array<string, mixed>
-     */
     public function toArray(object $notifiable): array
     {
-        $statusTranslated = __(ucfirst($this->status));
+        $statusKey = $this->getStatusKey($this->status);
+        $statusTranslated = __($statusKey);
+        
         return [
             'title'    => __('Order Status Updated'),
             'body'     => __('Your order status has been updated to :status', ['status' => $statusTranslated]),
@@ -61,7 +58,9 @@ class OrderStatusNotification extends Notification
 
     public function toFcm($notifiable)
     {
-        $statusTranslated = __(ucfirst($this->status));
+        $statusKey = $this->getStatusKey($this->status);
+        $statusTranslated = __($statusKey);
+
         return [
             'to'           => $notifiable->device_token,
             'notification' => [
@@ -71,7 +70,21 @@ class OrderStatusNotification extends Notification
             'data'         => [
                 'order_id' => (string) $this->order->id,
                 'status'   => $this->status,
+                'click_action' => 'FLUTTER_NOTIFICATION_CLICK',
             ],
         ];
+    }
+
+    protected function getStatusKey($status)
+    {
+        $map = [
+            'pending'    => 'Pending',
+            'processing' => 'Preparing',
+            'ready'      => 'Ready for Pickup',
+            'completed'  => 'Completed',
+            'cancelled'  => 'Cancelled',
+        ];
+
+        return $map[$status] ?? ucfirst($status);
     }
 }

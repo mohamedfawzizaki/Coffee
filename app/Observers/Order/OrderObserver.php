@@ -77,20 +77,36 @@ class OrderObserver
         $customer = null;
 
         // Only notify on meaningful status changes
-        $notifiableStatuses = ['preparing', 'prepared', 'ready', 'cancelled'];
+        $notifiableStatuses = ['pending', 'processing', 'ready', 'completed', 'cancelled'];
 
         if ($order->isDirty('status') && in_array($status, $notifiableStatuses)) {
 
             // Notify the original customer
             $customer = Customer::find($order->customer_id);
-            if ($customer) {
-                $customer->notify(new OrderStatusNotification($order, $status));
+            if ($customer && $customer->device_token) {
+                try {
+                    $customer->notify(new OrderStatusNotification($order, $status));
+                } catch (\Exception $e) {
+                    Log::error('OrderObserver: Failed to notify customer', [
+                        'order_id' => $order->id,
+                        'customer_id' => $customer->id,
+                        'error' => $e->getMessage()
+                    ]);
+                }
             }
 
             // Notify the gift recipient (send_to) if different from the original customer
             $sendTo = Customer::find($order->send_to);
-            if ($sendTo && optional($customer)->id !== $sendTo->id) {
-                $sendTo->notify(new OrderStatusNotification($order, $status));
+            if ($sendTo && optional($customer)->id !== $sendTo->id && $sendTo->device_token) {
+                try {
+                    $sendTo->notify(new OrderStatusNotification($order, $status));
+                } catch (\Exception $e) {
+                    Log::error('OrderObserver: Failed to notify gift recipient', [
+                        'order_id' => $order->id,
+                        'recipient_id' => $sendTo->id,
+                        'error' => $e->getMessage()
+                    ]);
+                }
             }
         }
 

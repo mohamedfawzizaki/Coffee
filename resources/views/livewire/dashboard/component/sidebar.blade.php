@@ -41,17 +41,19 @@
 
             <ul class="navbar-nav" id="navbar-nav">
 
-                <li class="nav-item">
-                    <a class="nav-link menu-link {{ $currentRoute == 'dashboard.' ? 'active' : '' }}"
-                        href="{{ route('dashboard.') }}">
-                        <i class="ri-dashboard-2-line"></i> <span data-key="t-dashboards">@lang('Dashboard')</span>
-                    </a>
-                </li>
+                @if ($user->id == 1 || $user->isAbleTo('dashboard-read'))
+                    <li class="nav-item">
+                        <a class="nav-link menu-link {{ $currentRoute == 'dashboard.' ? 'active' : '' }}"
+                            href="{{ route('dashboard.') }}">
+                            <i class="ri-dashboard-2-line"></i> <span data-key="t-dashboards">@lang('Dashboard')</span>
+                        </a>
+                    </li>
+                @endif
 
                 <li class="menu-title"><span data-key="t-menu">@lang('Users')</span></li>
 
 
-                @if ($user->hasPermission('customer-read'))
+                @if ($user->isAbleTo('customer-read'))
                     <li class="nav-item">
                         <a class="nav-link menu-link {{ str_starts_with($currentRoute, 'dashboard.customer.') ? 'active' : '' }}"
                             href="{{ route('dashboard.customer.index') }}">
@@ -76,7 +78,7 @@
                     </li>
                 @endif
 
-                @if ($user->hasPermission('customer-read'))
+                @if ($user->isAbleTo('customer-read'))
                     <li class="nav-item">
                         <a class="nav-link menu-link {{ str_starts_with($currentRoute, 'dashboard.branch.') ? 'active' : '' }}"
                             href="{{ route('dashboard.branch.index') }}">
@@ -98,7 +100,7 @@
                         str_starts_with($currentRoute, 'dashboard.product.') ||
                         $currentRoute == 'dashboard.category-product';
                 @endphp
-                @if ($user->hasPermission('product-read'))
+                @if ($user->isAbleTo('product-read'))
                     <li class="menu-title"><span data-key="t-menu">@lang('menu')</span></li>
 
                     <li class="nav-item">
@@ -142,7 +144,7 @@
                         str_starts_with($currentRoute, 'dashboard.gifttransfer.');
                     $isReportsActive = str_starts_with($currentRoute, 'dashboard.report.');
                 @endphp
-                @if ($user->hasPermission('order-read'))
+                @if ($user->isAbleTo('order-read'))
                     <li class="menu-title"><i class="ri-more-fill"></i> <span
                             data-key="t-pages">@lang('Finances')</span></li>
 
@@ -241,7 +243,7 @@
                     </li>
                 @endif
 
-                @if ($user->hasPermission('finance-read'))
+                @if ($user->isAbleTo('finance-read'))
                     <li class="nav-item">
                         <a class="nav-link menu-link {{ str_starts_with($currentRoute, 'dashboard.payment.') ? 'active' : '' }}"
                             href="{{ route('dashboard.payment.index') }}">
@@ -266,7 +268,7 @@
                     </li>
                 @endif
 
-                @if ($user->hasPermission('marketing-read'))
+                @if ($user->isAbleTo('marketing-read'))
                     <li class="menu-title"><span data-key="t-menu">@lang('Contact Center')</span></li>
 
                     <li class="nav-item">
@@ -293,7 +295,7 @@
                     </li> -->
                 @endif
 
-                @if ($user->hasPermission('admin-read'))
+                @if ($user->isAbleTo('admin-read'))
                     <li class="menu-title"><i class="ri-more-fill"></i> <span
                             data-key="t-components">@lang('Team')</span></li>
 
@@ -320,7 +322,7 @@
                         str_starts_with($currentRoute, 'dashboard.banner.') ||
                         str_starts_with($currentRoute, 'dashboard.terms.');
                 @endphp
-                @if ($user->hasPermission('setting-read'))
+                @if ($user->isAbleTo('setting-read'))
 
 
                     <li class="menu-title"><i class="ri-more-fill"></i> <span
@@ -363,7 +365,7 @@
                             id="sidebarAuth">
                             <ul class="nav nav-sm flex-column">
 
-                                @if ($user->hasPermission('blog-read'))
+                                @if ($user->isAbleTo('blog-read'))
                                     <li class="nav-item">
                                         <a href="{{ route('dashboard.blog.index') }}"
                                             class="nav-link {{ str_starts_with($currentRoute, 'dashboard.blog.') ? 'active' : '' }}">

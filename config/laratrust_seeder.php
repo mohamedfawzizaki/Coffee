@@ -21,6 +21,7 @@ return [
             'setting'   => 'c,r,u,d',
             'marketing' => 'c,r,u,d',
             'blog'      => 'c,r,u,d',
+            'dashboard' => 'r',
 
         ],
     ],

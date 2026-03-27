@@ -3,7 +3,6 @@
 namespace App\Livewire\Dashboard\Order;
 
 use App\Models\Order\Order;
-use App\Notifications\Admin\OrderStatusNotification;
 use App\Service\Dashboard\Order\RefundOrderItemService;
 use Livewire\Attributes\Title;
 use Livewire\Component;
@@ -32,10 +31,6 @@ class OrderShow extends Component
         $this->order->status = $this->status;
 
         $this->order->save();
-
-        $customer = $this->order->customer;
-
-        $customer->notify(new OrderStatusNotification($this->status));
 
         request()->session()->flash('success', __('Status updated successfully'));
 

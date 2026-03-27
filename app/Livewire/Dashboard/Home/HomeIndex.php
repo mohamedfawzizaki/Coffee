@@ -9,7 +9,7 @@ use App\Models\Product\Product\Product;
 use Livewire\Attributes\Title;
 use Livewire\Component;
 
-class HomeIndex extends Component
+  class HomeIndex extends Component
 {
      public $customers;
 

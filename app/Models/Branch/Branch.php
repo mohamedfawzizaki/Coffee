@@ -59,4 +59,9 @@ class Branch extends Model implements TranslatableContract
         return $this->hasOne(TabletManger::class);
     }
 
+    public function isOpen()
+    {
+        return branchOpen($this->id) == __('Open');
+    }
+
 }

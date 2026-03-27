@@ -87,26 +87,25 @@ function branchOpen($id)
         return __('Closed');
     }
 
-    $today = strtolower(Carbon::now()->format('l'));
-
-    $now   = Carbon::now();
+    $timezone = 'Asia/Riyadh';
+    $now = Carbon::now($timezone);
+    $today = strtolower($now->format('l'));
 
     $worktime = Worktime::whereRaw('LOWER(day) = ?', [$today])
         ->where('branch_id', $id)
+        ->where('status', true)
         ->first();
 
     if (!$worktime) {
         return __('Closed');
     }
 
-    $all_day = $worktime->all_day;
-
-    if ($all_day) {
+    if ($worktime->all_day) {
         return __('Open');
     }
 
-    $fromTime = Carbon::parse($worktime->from);
-    $toTime = Carbon::parse($worktime->to);
+    $fromTime = Carbon::createFromFormat('H:i:s', $worktime->from, $timezone);
+    $toTime = Carbon::createFromFormat('H:i:s', $worktime->to, $timezone);
 
     $fromTime->setDate($now->year, $now->month, $now->day);
     $toTime->setDate($now->year, $now->month, $now->day);
