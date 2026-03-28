@@ -63,22 +63,38 @@ class WebHookService
     public function handleCustomer($customerPhone, $totalPrice, $orderId = null, $event)
     {
         try {
-            $existsBannedNumber = BannedNumber::where('number', $customerPhone)->first();
+            // 1. Normalize the incoming phone number (format: 5xxxxxxxx)
+            $normalizedPhone = normalizePhone($customerPhone);
+
+            if (empty($normalizedPhone)) {
+                 return true;
+            }
+
+            // 2. Check for banned numbers (also using normalization for robustness)
+            $existsBannedNumber = BannedNumber::where('number', $normalizedPhone)
+                ->orWhere('number', '0' . $normalizedPhone)
+                ->first();
 
             if($existsBannedNumber){
                 return true;
             }
 
-            $existingCustomer = Customer::where('phone', $customerPhone)->first();
+            // 3. Robust search for existing customer (treating all formats as the same)
+            $existingCustomer = Customer::where(function($q) use ($normalizedPhone) {
+                $q->where('phone', $normalizedPhone)
+                  ->orWhere('phone', '0' . $normalizedPhone)
+                  ->orWhere('phone', '966' . $normalizedPhone)
+                  ->orWhere('phone', '+966' . $normalizedPhone)
+                  ->orWhereRaw("TRIM(LEADING '0' FROM REPLACE(REPLACE(REPLACE(REPLACE(phone, '+966', ''), '966', ''), ' ', ''), '-', '')) = ?", [$normalizedPhone]);
+            })->first();
 
             if($existingCustomer){
-
 
                 $this->addPointsToCustomer($existingCustomer, $totalPrice, $orderId, $event);
 
             } else {
 
-                $this->createUnregisteredCustomer($customerPhone, $totalPrice);
+                $this->createUnregisteredCustomer($normalizedPhone, $totalPrice);
 
             }
 
@@ -160,8 +176,17 @@ class WebHookService
     public function createUnregisteredCustomer($customerPhone, $totalPrice)
     {
         try {
+            // Ensure inputs are clean
+            $normalizedPhone = normalizePhone($customerPhone);
 
-            $existingUnregisteredCustomer = UnregisteredCustomer::where('phone', $customerPhone)->first();
+            // Robust search to avoid duplicates if different formats exist in DB
+            $existingUnregisteredCustomer = UnregisteredCustomer::where(function($q) use ($normalizedPhone) {
+                $q->where('phone', $normalizedPhone)
+                  ->orWhere('phone', '0' . $normalizedPhone)
+                  ->orWhere('phone', '966' . $normalizedPhone)
+                  ->orWhere('phone', '+966' . $normalizedPhone)
+                  ->orWhereRaw("TRIM(LEADING '0' FROM REPLACE(REPLACE(REPLACE(REPLACE(phone, '+966', ''), '966', ''), ' ', ''), '-', '')) = ?", [$normalizedPhone]);
+            })->first();
 
             $points = 0;
 
@@ -185,7 +210,7 @@ class WebHookService
             } else {
 
                 UnregisteredCustomer::create([
-                    'phone' => $customerPhone,
+                    'phone' => $normalizedPhone, // ALWAYS store normalized version
                     'points' => $points,
                     'orders' => 1,
                     'total_spent' => $totalPrice,

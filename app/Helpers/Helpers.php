@@ -239,3 +239,32 @@ function productAvailableInBranch($branch_id, $product_id)
 
     return $branchProduct->status ? true : false;
 }
+
+/**
+ * Normalizes phone number by removing non-digits and specific prefixes (+966, 966, 0).
+ * Results in a standard format: 5xxxxxxxx
+ *
+ * @param string|null $phone
+ * @return string|null
+ */
+function normalizePhone($phone)
+{
+    if (empty($phone)) {
+        return $phone;
+    }
+
+    // 1. Remove all non-numeric characters (spaces, dashes, etc.)
+    $normalized = preg_replace('/[^0-9]/', '', $phone);
+
+    // 2. Remove Saudi country code (966) if present at the start
+    if (str_starts_with($normalized, '966')) {
+        $normalized = substr($normalized, 3);
+    }
+
+    // 3. Remove leading zero
+    $normalized = ltrim($normalized, '0');
+
+    // 4. Return only if it starts with 5 (standard Saudi mobile format)
+    // or return the cleaned string if it's potentially valid but different.
+    return $normalized;
+}

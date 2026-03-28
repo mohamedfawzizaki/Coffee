@@ -2,6 +2,7 @@
 
 namespace App\Http\Requests\Mobile\Auth;
 
+use App\Rules\UniquePhone;
 use Illuminate\Foundation\Http\FormRequest;
 
 class RegisterRequest extends FormRequest
@@ -23,11 +24,23 @@ class RegisterRequest extends FormRequest
     {
         return [
             'name'     => 'required|min:3|max:255',
-            'phone'    => 'required|min:10|max:15|unique:customers,phone',
+            'phone'    => ['required', 'string', 'size:9', new UniquePhone('customers', 'phone')],
             'email'    => 'nullable|email|unique:customers,email',
             'birthday' => 'nullable|date_format:Y-m-d|before:' . now()->subYears(7)->toDateString(),
         ];
 
+    }
+
+    /**
+     * Prepare the data for validation.
+     */
+    protected function prepareForValidation(): void
+    {
+        if ($this->has('phone')) {
+            $this->merge([
+                'phone' => normalizePhone($this->phone),
+            ]);
+        }
     }
 
     public function messages(): array
@@ -40,9 +53,7 @@ class RegisterRequest extends FormRequest
             'name.min' => __('Name must be at least 3 characters'),
             'name.max' => __('Name must be less than 255 characters'),
             'phone.required' => __('Phone is required'),
-            'phone.min' => __('Phone must be at least 10 characters'),
-            'phone.max' => __('Phone must be less than 15 characters'),
-            'phone.unique' => __('Phone already exists'),
+            'phone.size' => __('Phone must be exactly 9 digits (format: 5xxxxxxxx)'),
             'email.email' => __('Invalid email address'),
             'email.unique' => __('Email already exists'),
         ];
