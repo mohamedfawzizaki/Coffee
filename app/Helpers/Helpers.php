@@ -217,11 +217,19 @@ function customerMoneyToPoint($id, $money)
 {
     $customer = Customer::find($id);
 
-    if (!$customer || !$customer->card) {
+    if (!$customer) {
         return 0;
     }
 
     $card = $customer->card;
+
+    if (!$card) {
+        $card = CustomerCard::first();
+    }
+
+    if (!$card) {
+        return 0;
+    }
 
     // Example: 100$ = 1 point
     // points = money / money_to_point

@@ -115,47 +115,49 @@ class WebHookService
     public function addPointsToCustomer($existingCustomer, $totalPrice, $orderId = null, $event)
     {
         try {
+            $points = customerMoneyToPoint($existingCustomer->id, $totalPrice);
 
             if(isset($event) && $event == 'order.updated'){
-
-                $points = customerMoneyToPoint($existingCustomer->id, $totalPrice);
 
                 $customerPoint = CustomerPoint::where('customer_id', $existingCustomer->id)->where('order_id', $orderId)->first();
 
                 if($customerPoint){
 
                     $oldPoints = $customerPoint->amount;
+                    $newPoints = round($points);
 
-                    if($points > 0){
+                    if($newPoints > 0){
                         $customerPoint->update([
-                            'amount' => round($points),
+                            'amount' => $newPoints,
                         ]);
                     }else{
                         $customerPoint->delete();
                     }
+
+                    // Update total points on customer model
+                    $existingCustomer->update([
+                        'points' => $existingCustomer->points - $oldPoints + $newPoints,
+                    ]);
                 }
 
             }else{
 
+                $newPoints = round($points);
 
-            $existingCustomer->update([
-                'points' => $existingCustomer->points + $totalPrice,
-            ]);
+                $existingCustomer->update([
+                    'points' => $existingCustomer->points + $newPoints,
+                ]);
 
-            $points = customerMoneyToPoint($existingCustomer->id, $totalPrice);
-
-
-            CustomerPoint::create([
-                'customer_id' => $existingCustomer->id,
-                'order_id'    => $orderId,
-                'amount'      => round($points),
-                'ar_content'  => 'تم إضافة النقاط من الطلب الفوديكس',
-                'en_content'  => 'Points Added From Foodics Order',
-                'type'        => 'in',
-            ]);
+                CustomerPoint::create([
+                    'customer_id' => $existingCustomer->id,
+                    'order_id'    => $orderId,
+                    'amount'      => $newPoints,
+                    'ar_content'  => 'تم إضافة النقاط من الطلب الفوديكس',
+                    'en_content'  => 'Points Added From Foodics Order',
+                    'type'        => 'in',
+                ]);
 
             }
-
 
             return true;
 

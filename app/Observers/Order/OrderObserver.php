@@ -32,8 +32,9 @@ class OrderObserver
 
             $customer_orders_count = Order::where('customer_id', $order->customer_id)
                 ->where('created_at', '>=', now()->subDays(30))
-                ->where('status', '!=', 'cancelled')
+                ->where('status', 'completed')
                 ->where('type', '!=', 'point')
+                ->where('payment_method', '!=', 'points')
                 ->count();
 
             $card = CustomerCard::where('orders_count', '<=', $customer_orders_count)
@@ -110,8 +111,8 @@ class OrderObserver
             }
         }
 
-        // Loyalty card recalculation on cancellation
-        if ($status === 'cancelled') {
+        // Loyalty card recalculation on status change to/from completed
+        if ($order->isDirty('status') && ($status === 'completed' || $order->getOriginal('status') === 'completed')) {
             $customer = $customer ?? Customer::find($order->customer_id);
 
             if ($customer) {
@@ -121,8 +122,9 @@ class OrderObserver
 
                     $customer_orders_count = Order::where('customer_id', $order->customer_id)
                         ->where('created_at', '>=', now()->subDays(30))
-                        ->where('status', '!=', 'cancelled')
+                        ->where('status', 'completed')
                         ->where('type', '!=', 'point')
+                        ->where('payment_method', '!=', 'points')
                         ->count();
 
                     $card = CustomerCard::where('orders_count', '<=', $customer_orders_count)
