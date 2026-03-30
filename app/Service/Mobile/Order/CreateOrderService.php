@@ -133,7 +133,9 @@ class CreateOrderService
 
     public function calculatePoints($cart)
     {
-        return customerMoneyToPoint($cart->customer_id, $cart->grand_total);
+        $customer = \App\Models\Customer\Customer::find($cart->customer_id);
+        if (!$customer) return 0;
+        return calculatePoints($customer, $cart->grand_total);
     }
 
     public function handleFinance($order, $customer, $points, $payment_method)

@@ -193,12 +193,8 @@ class WebHookService
             $points = 0;
 
             $card = CustomerCard::first();
-
-            if(!$card){
-                return true;
-            }
-
-            $points = round($totalPrice / $card->money_to_point);
+            $moneyToPointRatio = ($card && $card->money_to_point > 0) ? $card->money_to_point : 1;
+            $points = (int) round($totalPrice / $moneyToPointRatio);
 
 
             if($existingUnregisteredCustomer){

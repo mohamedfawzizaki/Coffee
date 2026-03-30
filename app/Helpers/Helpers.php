@@ -213,6 +213,12 @@ function customerPointToMoney($id, $points)
  * @param float $money
  * @return float
  */
+/**
+ * Convert money to points based on customer's membership tier
+ * @param int $id Customer ID
+ * @param float $money Amount spent
+ * @return int Calculated points
+ */
 function customerMoneyToPoint($id, $money)
 {
     $customer = Customer::find($id);
@@ -223,20 +229,66 @@ function customerMoneyToPoint($id, $money)
 
     $card = $customer->card;
 
+    // Fallback to first card if customer has no card
     if (!$card) {
-        $card = CustomerCard::first();
+        $card = CustomerCard::orderBy('id', 'asc')->first();
     }
 
-    if (!$card) {
+    $moneyToPointRatio = 0;
+
+    if ($card && $card->money_to_point > 0) {
+        $moneyToPointRatio = $card->money_to_point;
+    } else {
+        // Ultimate fallback to global settings
+        $setting = \App\Models\General\Setting::first();
+        $moneyToPointRatio = $setting->money_to_point ?? 1;
+    }
+
+    if ($moneyToPointRatio <= 0) {
         return 0;
     }
 
-    // Example: 100$ = 1 point
-    // points = money / money_to_point
-    if ($card->money_to_point <= 0) {
-        return 0;
+    return (int) round($money / $moneyToPointRatio);
+}
+
+/**
+ * Get fixed points for specific actions potentially based on customer's membership tier
+ * @param int $id Customer ID
+ * @param string $actionType type of action (login, referral, register)
+ * @return int points to award
+ */
+function customerActionPoints($id, $actionType)
+{
+    $setting = \App\Models\General\Setting::first();
+    $points = 0;
+
+    switch ($actionType) {
+        case 'login':
+            $points = $setting->daily_login_points ?? 0;
+            break;
+        case 'referral':
+            $points = $setting->friend_invitation_points ?? 0;
+            break;
+        case 'register':
+            $points = $setting->first_register_point ?? 0;
+            break;
     }
-    return round($money / $card->money_to_point);
+
+    // Future enhancement: Multiply or override points based on $customer->card if needed
+    // For now, we centralize the setting access here.
+
+    return (int) $points;
+}
+
+/**
+ * Calculate points based on customer and amount (Explicitly requested format)
+ * @param \App\Models\Customer\Customer $customer
+ * @param float $amount
+ * @return int
+ */
+function calculatePoints(\App\Models\Customer\Customer $customer, float $amount)
+{
+    return customerMoneyToPoint($customer->id, $amount);
 }
 
 function productAvailableInBranch($branch_id, $product_id)

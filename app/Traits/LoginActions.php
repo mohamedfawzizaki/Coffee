@@ -14,19 +14,18 @@ trait LoginActions
 @paramCustomer$customer
 @returnbool
     */
-    public function dailyLogin($customer){
-
+    public function dailyLogin($customer)
+    {
         try {
-
-        $setting = Setting::first();
-
-        $dailyLoginPoint = $setting->daily_login_points;
-
-        if($dailyLoginPoint > 0){
-
             $exists = DailyLogin::where('customer_id', $customer->id)->where('date', now()->format('Y-m-d'))->first();
 
-            if(!$exists){
+            if (!$exists) {
+                $dailyLoginPoint = customerActionPoints($customer->id, 'login');
+
+                if ($dailyLoginPoint <= 0) {
+                    return true;
+                }
+
                 // Create Daily Login Points
                 DailyLogin::create([
                     'customer_id' => $customer->id,
@@ -50,11 +49,7 @@ trait LoginActions
                 ]);
             }
 
-
-        }
-
-        return true;
-
+            return true;
         } catch (\Exception $e) {
             Log::error('Failed to add daily login points: ' . $e->getMessage());
             return false;
@@ -65,8 +60,7 @@ trait LoginActions
     {
         try {
     
-            $setting = Setting::first();
-            $firstRegisterPoint = $setting->first_register_point ?? 0;
+            $firstRegisterPoint = customerActionPoints($customer->id, 'register');
     
             if ($firstRegisterPoint <= 0) {
                 return true;
@@ -131,8 +125,7 @@ trait LoginActions
     {
         try {
     
-            $setting = Setting::first();
-            $referalPoint = $setting->friend_invitation_points ?? 0;
+            $referalPoint = customerActionPoints($customer->id, 'referral');
     
             if ($referalPoint <= 0) {
                 return true;
