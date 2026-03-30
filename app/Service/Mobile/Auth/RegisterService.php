@@ -86,6 +86,13 @@ class RegisterService
     
                 $this->registerPoints($customer);
                 $this->registerFoodicsPoints($customer);
+
+                if ($request->referal_code) {
+                    $refered_customer = Customer::find($request->referal_code);
+                    if ($refered_customer) {
+                        $this->registerReferalPoints($refered_customer);
+                    }
+                }
     
                 return $customer;
             });

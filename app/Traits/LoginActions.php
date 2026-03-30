@@ -126,4 +126,35 @@ trait LoginActions
             return false;
         }
     }
+
+    public function registerReferalPoints($customer)
+    {
+        try {
+    
+            $setting = Setting::first();
+            $referalPoint = $setting->friend_invitation_points ?? 0;
+    
+            if ($referalPoint <= 0) {
+                return true;
+            }
+    
+            $customer->increment('points', $referalPoint);
+    
+            CustomerPoint::create([
+                'customer_id' => $customer->id,
+                'amount' => $referalPoint,
+                'type' => 'in',
+                'ar_content' => 'تم إضافة النقاط من الإحالة',
+                'en_content' => 'Points Added From Referral',
+            ]);
+    
+            return true;
+    
+        } catch (\Exception $e) {
+    
+            Log::error('Failed to add referal points: ' . $e->getMessage());
+    
+            return false;
+        }
+    }
 }

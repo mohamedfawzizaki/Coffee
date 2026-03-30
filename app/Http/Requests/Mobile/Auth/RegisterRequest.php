@@ -27,6 +27,7 @@ class RegisterRequest extends FormRequest
             'phone'    => ['required', 'string', 'size:9', new UniquePhone('customers', 'phone')],
             'email'    => 'nullable|email|unique:customers,email',
             'birthday' => 'nullable|date_format:Y-m-d|before:' . now()->subYears(7)->toDateString(),
+            'referal_code' => 'nullable|exists:customers,id',
         ];
 
     }
