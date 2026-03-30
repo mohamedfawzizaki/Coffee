@@ -18,7 +18,7 @@ class Customer extends Authenticatable implements JWTSubject
 {
     use LogsActivity, Notifiable, ForceTimeZone;
 
-    protected $fillable = ['name', 'phone', 'email', 'password', 'image', 'status', 'otp', 'otp_expire', 'device_token', 'verified', 'lat', 'lng', 'address', 'wallet', 'online', 'points', 'birthday', 'card_id'];
+    protected $fillable = ['name', 'phone', 'email', 'password', 'image', 'status', 'otp', 'otp_expire', 'device_token', 'verified', 'lat', 'lng', 'address', 'wallet', 'online', 'points', 'birthday', 'card_id', 'referral_code'];
 
     protected $hidden = ['password', 'otp', 'otp_expire', 'device_token', 'verified', 'wallet', 'points'];
 

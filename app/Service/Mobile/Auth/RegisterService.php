@@ -75,7 +75,9 @@ class RegisterService
         try {
             $customer = \Illuminate\Support\Facades\DB::transaction(function () use ($request) {
     
-                $customer = Customer::create($request->validated());
+                $data = $request->validated();
+                unset($data['referral_code']);
+                $customer = Customer::create($data);
     
                 $card = CustomerCard::first();
                 if ($card) {
@@ -87,10 +89,10 @@ class RegisterService
                 $this->registerPoints($customer);
                 $this->registerFoodicsPoints($customer);
 
-                if ($request->referal_code) {
-                    $refered_customer = Customer::find($request->referal_code);
+                if ($request->referral_code) {
+                    $refered_customer = Customer::where('referral_code', $request->referral_code)->first();
                     if ($refered_customer) {
-                        $this->registerReferalPoints($refered_customer);
+                        $this->registerReferralPoints($refered_customer);
                     }
                 }
     
@@ -125,5 +127,40 @@ class RegisterService
             'status'         =>  Auth::guard('mobile')->user()->status,
 
         ]);
+    }
+
+
+    public function generateReferralLink($request)
+    {
+        $customer = auth('mobile')->user();
+
+        if ($customer->referral_code) {
+            return response()->json([
+                'message' => 'Referral code already generated',
+                'referral_code' => $customer->referral_code,
+            ]);
+        }
+
+        $referralCode = $this->generateUniqueReferralCode();
+
+        $customer->update([
+            'referral_code' => $referralCode
+        ]);
+
+        return response()->json([
+            'message' => 'Referral code generated successfully',
+            'referral_code' => $referralCode,
+        ]);
+    }
+
+    private function generateUniqueReferralCode()
+    {
+        $code = strtoupper(substr(md5(uniqid(rand(), true)), 0, 6));
+
+        if (Customer::where('referral_code', $code)->exists()) {
+            return $this->generateUniqueReferralCode();
+        }
+
+        return $code;
     }
 }

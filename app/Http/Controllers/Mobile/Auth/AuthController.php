@@ -40,6 +40,11 @@ class AuthController extends Controller
         return $this->registerService->register($request);
     }
 
+    public function generateReferralLink(Request $request)
+    {
+        return $this->registerService->generateReferralLink($request);
+    }
+
 
     public function logout()
     {

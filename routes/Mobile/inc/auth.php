@@ -9,6 +9,8 @@ Route::post('login', [AuthController::class, 'login']);
 
 Route::post('register', [AuthController::class, 'register']);
 
+Route::middleware('auth:mobile')->post('generate-referral-code', [AuthController::class, 'generateReferralLink']);
+
 Route::post('register-otp', [AuthController::class, 'registerOtp']);
 
 Route::post('generalotp', [SmsController::class, 'generalotp']);

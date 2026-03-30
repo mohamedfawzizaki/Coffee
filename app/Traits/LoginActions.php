@@ -127,7 +127,7 @@ trait LoginActions
         }
     }
 
-    public function registerReferalPoints($customer)
+    public function registerReferralPoints($customer)
     {
         try {
     
