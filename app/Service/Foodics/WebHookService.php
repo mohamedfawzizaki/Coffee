@@ -94,7 +94,7 @@ class WebHookService
 
             } else {
 
-                $this->createUnregisteredCustomer($normalizedPhone, $totalPrice);
+                $this->createUnregisteredCustomer($normalizedPhone, $totalPrice, $orderId);
 
             }
 
@@ -175,7 +175,7 @@ class WebHookService
     }
 
 
-    public function createUnregisteredCustomer($customerPhone, $totalPrice)
+    public function createUnregisteredCustomer($customerPhone, $totalPrice, $foodicsOrderId = null)
     {
         try {
             // Ensure inputs are clean
@@ -213,6 +213,24 @@ class WebHookService
                     'orders' => 1,
                     'total_spent' => $totalPrice,
                 ]);
+            }
+
+            // -------------------------------------------------------
+            // ALSO save an individual row in the foodics table so that
+            // on registration we can link each CustomerPoint to its
+            // exact source order (order_id).
+            // -------------------------------------------------------
+            if ($foodicsOrderId) {
+                $alreadySaved = \App\Models\Foodics\Foodics::where('order_id', $foodicsOrderId)->exists();
+                if (!$alreadySaved) {
+                    \App\Models\Foodics\Foodics::create([
+                        'order_id'    => $foodicsOrderId,
+                        'phone'       => $normalizedPhone,
+                        'total_price' => $totalPrice,
+                        'points'      => $points,
+                        'customer_id' => null,
+                    ]);
+                }
             }
 
             return true;

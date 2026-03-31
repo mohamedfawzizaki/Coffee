@@ -92,31 +92,84 @@ trait LoginActions
     public function registerFoodicsPoints($customer)
     {
         try {
-    
-            $exists = UnregisteredCustomer::where('phone', $customer->phone)->first();
-    
+            $normalizedPhone = normalizePhone($customer->phone);
+
+            // Try to find the aggregated unregistered record (used as a quick existence check)
+            $exists = UnregisteredCustomer::where(function ($q) use ($normalizedPhone) {
+                $q->where('phone', $normalizedPhone)
+                  ->orWhere('phone', '0' . $normalizedPhone)
+                  ->orWhere('phone', '966' . $normalizedPhone)
+                  ->orWhere('phone', '+966' . $normalizedPhone)
+                  ->orWhereRaw("TRIM(LEADING '0' FROM REPLACE(REPLACE(REPLACE(REPLACE(phone, '+966', ''), '966', ''), ' ', ''), '-', '')) = ?", [$normalizedPhone]);
+            })->first();
+
             if (!$exists) {
                 return true;
             }
-    
-            $customer->increment('points', $exists->points);
-    
-            CustomerPoint::create([
-                'customer_id' => $customer->id,
-                'amount' => $exists->points,
-                'type' => 'in',
-                'ar_content' => 'تم إضافة النقاط من الطلبات الفوديكس',
-                'en_content' => 'Points Added From Foodics Orders',
-            ]);
-    
+
+            // ------------------------------------------------------------------
+            // PRIMARY: fetch per-order rows from the foodics table and create
+            // one CustomerPoint per order so every record has an order_id.
+            // ------------------------------------------------------------------
+            $foodicsOrders = \App\Models\Foodics\Foodics::where(function ($q) use ($normalizedPhone) {
+                $q->where('phone', $normalizedPhone)
+                  ->orWhere('phone', '0' . $normalizedPhone)
+                  ->orWhere('phone', '966' . $normalizedPhone)
+                  ->orWhere('phone', '+966' . $normalizedPhone)
+                  ->orWhereRaw("TRIM(LEADING '0' FROM REPLACE(REPLACE(REPLACE(REPLACE(phone, '+966', ''), '966', ''), ' ', ''), '-', '')) = ?", [$normalizedPhone]);
+            })->whereNull('customer_id')->get();
+
+            if ($foodicsOrders->isNotEmpty()) {
+                $totalPoints = 0;
+
+                foreach ($foodicsOrders as $foodicsOrder) {
+                    $points = (int) round(customerMoneyToPoint($customer->id, $foodicsOrder->total_price));
+
+                    \App\Models\Customer\CustomerPoint::create([
+                        'customer_id' => $customer->id,
+                        'order_id'    => $foodicsOrder->id,   // ← linked per order
+                        'order_type'  => 'foodics',
+                        'amount'      => $points,
+                        'type'        => 'in',
+                        'ar_content'  => 'تم إضافة النقاط من الطلبات الفوديكس',
+                        'en_content'  => 'Points Added From Foodics Orders',
+                    ]);
+
+                    // Mark Foodics row as claimed by this customer
+                    $foodicsOrder->update(['customer_id' => $customer->id]);
+
+                    $totalPoints += $points;
+                }
+
+                if ($totalPoints > 0) {
+                    $customer->increment('points', $totalPoints);
+                }
+
+            } else {
+                // ------------------------------------------------------------------
+                // FALLBACK: no per-order Foodics rows found (old data before this fix).
+                // Use the aggregated unregistered points total — still no order_id but
+                // at least existing data keeps working.
+                // ------------------------------------------------------------------
+                $customer->increment('points', $exists->points);
+
+                \App\Models\Customer\CustomerPoint::create([
+                    'customer_id' => $customer->id,
+                    'amount'      => $exists->points,
+                    'type'        => 'in',
+                    'ar_content'  => 'تم إضافة النقاط من الطلبات الفوديكس',
+                    'en_content'  => 'Points Added From Foodics Orders',
+                ]);
+            }
+
             $exists->delete();
-    
+
             return true;
-    
+
         } catch (\Exception $e) {
-    
+
             Log::error('Failed to add register foodics points: ' . $e->getMessage());
-    
+
             return false;
         }
     }

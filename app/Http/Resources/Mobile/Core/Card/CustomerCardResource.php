@@ -16,7 +16,13 @@ class CustomerCardResource extends JsonResource
     public function toArray(Request $request): array
     {
 
-        $orders_count = Auth::guard('mobile')->user()->orders()->count();
+        $orders_count = Auth::guard('mobile')->user()
+            ->orders()
+            ->where('created_at', '>=', now()->subDays(30))
+            ->where('status', 'completed')
+            ->where('type', '!=', 'point')
+            ->where('payment_method', '!=', 'points')
+            ->count();
 
         $to_have = $this->orders_count - $orders_count;
 
