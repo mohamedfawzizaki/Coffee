@@ -81,9 +81,6 @@ class CheckPermission
 
         // Special case for dashboard home
         if ($routeName === 'dashboard.') {
-            if (!$user->isAbleTo('dashboard-read')) {
-                abort(403);
-            }
             return $next($request);
         }
 
