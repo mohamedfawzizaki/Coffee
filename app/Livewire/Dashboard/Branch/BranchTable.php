@@ -6,6 +6,7 @@ use App\Livewire\Dashboard\BaseTable;
 use App\Models\Branch\Branch;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Support\Str;
+use Livewire\Attributes\On;
 use Rappasoft\LaravelLivewireTables\Views\Column;
 
 class BranchTable extends BaseTable
@@ -55,5 +56,13 @@ class BranchTable extends BaseTable
             }),
 
         ];
+    }
+
+    #[On('echo:my-channel,App\\Events\\FlutterEvent')]
+    public function onBranchStatusUpdated($data)
+    {
+        if (isset($data['type']) && $data['type'] === 'branch_status_updated') {
+            $this->dispatch('refresh');
+        }
     }
 }

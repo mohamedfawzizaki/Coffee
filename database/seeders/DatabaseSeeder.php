@@ -29,9 +29,9 @@ class DatabaseSeeder extends Seeder
             LaratrustSeeder::class,
             AdminSeeder::class,
             SettingSeeder::class,
-            BranchSeeder::class,
+            // BranchSeeder::class,
             // WorktimeSeeder::class,
-            ProductSeeder::class,
+            // ProductSeeder::class,
             // GiftSeeder::class,
             // CustomerCardSeeder::class,
             // BannerSeeder::class,
@@ -40,13 +40,13 @@ class DatabaseSeeder extends Seeder
             
             
             
-            \Database\Seeders\Test\CustomerCardSeeder::class,
-            \Database\Seeders\Test\UnregisteredCustomerSeeder::class,
-            \Database\Seeders\Test\CustomerSeeder::class,
-            \Database\Seeders\Test\PaymentSeeder::class,
-            OrderSeeder::class,
-            \Database\Seeders\Test\ContactSeeder::class,
-            \Database\Seeders\Test\GiftTestSeeder::class,
+            // \Database\Seeders\Test\CustomerCardSeeder::class,
+            // \Database\Seeders\Test\UnregisteredCustomerSeeder::class,
+            // \Database\Seeders\Test\CustomerSeeder::class,
+            // \Database\Seeders\Test\PaymentSeeder::class,
+            // OrderSeeder::class,
+            // \Database\Seeders\Test\ContactSeeder::class,
+            // \Database\Seeders\Test\GiftTestSeeder::class,
             
         ]);
     }

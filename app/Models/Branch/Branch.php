@@ -13,12 +13,6 @@ class Branch extends Model implements TranslatableContract
 {
     use Translatable, LogsActivity, ForceTimeZone;
     
-    protected static function booted()
-    {
-        static::addGlobalScope('active', function ($builder) {
-            $builder->where('status', 1);
-        });
-    }
 
     public function scopeActive($query)
     {

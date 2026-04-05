@@ -6,11 +6,15 @@ use App\Http\Controllers\Controller;
 use App\Http\Resources\Cashier\Order\OrderResource;
 use App\Models\Order\Gift\GiftOrder;
 use App\Models\Order\Order;
+use App\Notifications\Branch\BranchStatusNotification;
+use App\Traits\Chat;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 
 class HomeController extends Controller
 {
+    use Chat;
+
     private $cashier;
 
     public function __construct()
@@ -160,8 +164,30 @@ class HomeController extends Controller
             $branch->update(['status' => 1]);
         }
 
+
+        $this->syncBranchStatus($branch);
+
         return $this->success(__('Branch status changed successfully'));
 
+    }
+
+    protected function syncBranchStatus($branch)
+    {
+        // 1. Notify all branch managers via FCM and database
+        $managers = $branch->posManagers;
+        foreach ($managers as $manager) {
+            $manager->notify(new BranchStatusNotification($branch));
+        }
+
+        // 2. Trigger Pusher broadcast for real-time app update (other devices/dashboard)
+        $this->sendnotification(
+            'branch-' . $branch->id,
+            'branch_status_updated',
+            [
+                'branch_id' => $branch->id,
+                'status' => (int) $branch->status
+            ]
+        );
     }
 
     /**

@@ -48,7 +48,8 @@ class AppServiceProvider extends ServiceProvider
         if (!$this->app->runningInConsole()) {
             try {
                 if (Schema::hasTable('settings')) {
-                    view()->share('setting', Setting::first());
+                    $setting = Setting::first() ?? new Setting();
+                    view()->share('setting', $setting);
                 }
             } catch (\Throwable $e) {
                 // Intentionally ignore: DB may be down during bootstrap

@@ -2,8 +2,10 @@
 
 namespace App\Livewire\Dashboard;
 
-use App\Models\Administrator\Role;
-use Carbon\Carbon;
+use App\Models\Branch\Branch;
+use App\Models\Branch\BranchManager;
+use App\Notifications\Branch\BranchStatusNotification;
+use App\Traits\Chat;
 use Illuminate\Database\Eloquent\Builder;
 use Livewire\Attributes\On;
 use Rappasoft\LaravelLivewireTables\DataTableComponent;
@@ -17,6 +19,8 @@ use Rappasoft\LaravelLivewireTables\Views\Filters\DateRangeFilter;
 
 class BaseTable extends DataTableComponent
 {
+    use Chat;
+
     protected $actionDisplay = ['show', 'edit', 'delete'];
     protected $permissionName = null;
 
@@ -405,7 +409,27 @@ class BaseTable extends DataTableComponent
                 $record->device_token = null;
             }
 
+
             $record->save();
+
+            // Sync logic for Branch status
+            if ($record instanceof Branch) {
+                // 1. Notify all branch managers via FCM and database
+                $managers = $record->posManagers;
+                foreach ($managers as $manager) {
+                    $manager->notify(new BranchStatusNotification($record));
+                }
+
+                // 2. Trigger Pusher broadcast for real-time app update
+                $this->sendnotification(
+                    'branch-' . $record->id,
+                    'branch_status_updated',
+                    [
+                        'branch_id' => $record->id,
+                        'status' => (int) $record->status
+                    ]
+                );
+            }
 
             $this->dispatch('refresh');
 
