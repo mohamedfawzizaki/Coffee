@@ -119,48 +119,56 @@ trait LoginActions
                   ->orWhereRaw("TRIM(LEADING '0' FROM REPLACE(REPLACE(REPLACE(REPLACE(phone, '+966', ''), '966', ''), ' ', ''), '-', '')) = ?", [$normalizedPhone]);
             })->whereNull('customer_id')->get();
 
-            if ($foodicsOrders->isNotEmpty()) {
-                $totalPoints = 0;
+            // if ($foodicsOrders->isNotEmpty()) {
+            //     $totalPoints = 0;
 
-                foreach ($foodicsOrders as $foodicsOrder) {
-                    $points = (int) round(customerMoneyToPoint($customer->id, $foodicsOrder->total_price));
+            //     foreach ($foodicsOrders as $foodicsOrder) {
+            //         $points = (int) round(customerMoneyToPoint($customer->id, $foodicsOrder->total_price));
 
-                    \App\Models\Customer\CustomerPoint::create([
-                        'customer_id' => $customer->id,
-                        'order_id'    => $foodicsOrder->id,   // ← linked per order
-                        'order_type'  => 'foodics',
-                        'amount'      => $points,
-                        'type'        => 'in',
-                        'ar_content'  => 'تم إضافة النقاط من الطلبات الفوديكس',
-                        'en_content'  => 'Points Added From Foodics Orders',
-                    ]);
+            //         \App\Models\Customer\CustomerPoint::create([
+            //             'customer_id' => $customer->id,
+            //             'order_id'    => $foodicsOrder->id,   // ← linked per order
+            //             'order_type'  => 'foodics',
+            //             'amount'      => $points,
+            //             'type'        => 'in',
+            //             'ar_content'  => 'تم إضافة النقاط من الطلبات الفوديكس',
+            //             'en_content'  => 'Points Added From Foodics Orders',
+            //         ]);
 
-                    // Mark Foodics row as claimed by this customer
-                    $foodicsOrder->update(['customer_id' => $customer->id]);
+            //         // Mark Foodics row as claimed by this customer
+            //         $foodicsOrder->update(['customer_id' => $customer->id]);
 
-                    $totalPoints += $points;
-                }
+            //         $totalPoints += $points;
+            //     }
 
-                if ($totalPoints > 0) {
-                    $customer->increment('points', $totalPoints);
-                }
+            //     if ($totalPoints > 0) {
+            //         $customer->increment('points', $totalPoints);
+            //     }
 
-            } else {
+            // } else {
                 // ------------------------------------------------------------------
                 // FALLBACK: no per-order Foodics rows found (old data before this fix).
                 // Use the aggregated unregistered points total — still no order_id but
                 // at least existing data keeps working.
                 // ------------------------------------------------------------------
-                $customer->increment('points', $exists->points);
+               $firstRegisterPoint = customerActionPoints($customer->id, 'register');
+    
+            if ($firstRegisterPoint <= 0) {
+                return true;
+            }
+
+            $customer->increment('points', $firstRegisterPoint);
+                // $customer->increment('points', $exists->points);
 
                 \App\Models\Customer\CustomerPoint::create([
                     'customer_id' => $customer->id,
-                    'amount'      => $exists->points,
+                    // 'amount'      => $exists->points,
+                    'amount'      => $firstRegisterPoint,
                     'type'        => 'in',
                     'ar_content'  => 'تم إضافة النقاط من الطلبات الفوديكس',
                     'en_content'  => 'Points Added From Foodics Orders',
                 ]);
-            }
+            // }
 
             $exists->delete();
 

@@ -41,7 +41,7 @@ class DatabaseSeeder extends Seeder
             
             
             // \Database\Seeders\Test\CustomerCardSeeder::class,
-            // \Database\Seeders\Test\UnregisteredCustomerSeeder::class,
+            \Database\Seeders\Test\UnregisteredCustomerSeeder::class,
             // \Database\Seeders\Test\CustomerSeeder::class,
             // \Database\Seeders\Test\PaymentSeeder::class,
             // OrderSeeder::class,

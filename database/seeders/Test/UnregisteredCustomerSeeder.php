@@ -13,9 +13,9 @@ class UnregisteredCustomerSeeder extends Seeder
     public function run(): void
     {
         \App\Models\Customer\UnregisteredCustomer::create([
-                "name" => "test unregistered customer 10",
-                "phone" => "+966570640878",
-                "email" => "unregistered10@example.com",
+                "name" => "unregistered customer 1",
+                "phone" => "+966570640871",
+                "email" => "unregister1@example.com",
                 'points' => 5
             ]);
 
