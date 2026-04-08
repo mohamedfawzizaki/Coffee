@@ -121,6 +121,7 @@ trait LoginActions
 
             if ($foodicsOrders->isNotEmpty()) {
                 $totalPoints = 0;
+                $targetPoints = (int) ($exists->points ?? 0);
 
                 foreach ($foodicsOrders as $foodicsOrder) {
                     $points = (int) round($foodicsOrder->points ?? 0);
@@ -150,23 +151,33 @@ trait LoginActions
 
                 if ($totalPoints > 0) {
                     $customer->increment('points', $totalPoints);
-                    $exists->delete();
-                } else {
-                    // Keep backward compatibility by preserving already aggregated points.
-                    if ((int) $exists->points > 0) {
-                        $customer->increment('points', $exists->points);
+                }
+
+                // Keep parity with pre-registration accumulated points.
+                // If per-order rows differ from aggregated total, add/subtract the difference.
+                $diff = $targetPoints - $totalPoints;
+                if ($diff !== 0) {
+                    $type = $diff > 0 ? 'in' : 'out';
+                    $amount = abs($diff);
+
+                    if ($amount > 0) {
+                        if ($type === 'in') {
+                            $customer->increment('points', $amount);
+                        } else {
+                            $customer->decrement('points', $amount);
+                        }
 
                         \App\Models\Customer\CustomerPoint::create([
                             'customer_id' => $customer->id,
-                            'amount'      => $exists->points,
-                            'type'        => 'in',
-                            'ar_content'  => 'تم إضافة النقاط من الطلبات الفوديكس',
-                            'en_content'  => 'Points Added From Foodics Orders',
+                            'amount'      => $amount,
+                            'type'        => $type,
+                            'ar_content'  => 'تسوية نقاط الفوديكس لمطابقة الرصيد السابق',
+                            'en_content'  => 'Foodics points adjustment to match previous balance',
                         ]);
                     }
-
-                    $exists->delete();
                 }
+
+                $exists->delete();
 
             } else {
                 // ------------------------------------------------------------------
