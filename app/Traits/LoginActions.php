@@ -123,7 +123,14 @@ trait LoginActions
                 $totalPoints = 0;
 
                 foreach ($foodicsOrders as $foodicsOrder) {
-                    $points = (int) round($foodicsOrder->points);
+                    $points = (int) round($foodicsOrder->points ?? 0);
+                    if ($points <= 0) {
+                        $points = (int) round(customerMoneyToPoint($customer->id, (float) ($foodicsOrder->total_price ?? 0)));
+                    }
+
+                    if ($points <= 0) {
+                        continue;
+                    }
 
                     \App\Models\Customer\CustomerPoint::create([
                         'customer_id' => $customer->id,
@@ -143,6 +150,22 @@ trait LoginActions
 
                 if ($totalPoints > 0) {
                     $customer->increment('points', $totalPoints);
+                    $exists->delete();
+                } else {
+                    // Keep backward compatibility by preserving already aggregated points.
+                    if ((int) $exists->points > 0) {
+                        $customer->increment('points', $exists->points);
+
+                        \App\Models\Customer\CustomerPoint::create([
+                            'customer_id' => $customer->id,
+                            'amount'      => $exists->points,
+                            'type'        => 'in',
+                            'ar_content'  => 'تم إضافة النقاط من الطلبات الفوديكس',
+                            'en_content'  => 'Points Added From Foodics Orders',
+                        ]);
+                    }
+
+                    $exists->delete();
                 }
 
             } else {
@@ -161,9 +184,9 @@ trait LoginActions
                     'ar_content'  => 'تم إضافة النقاط من الطلبات الفوديكس',
                     'en_content'  => 'Points Added From Foodics Orders',
                 ]);
-            }
 
-            $exists->delete();
+                $exists->delete();
+            }
 
             return true;
 
