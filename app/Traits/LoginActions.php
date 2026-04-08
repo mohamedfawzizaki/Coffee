@@ -122,6 +122,7 @@ trait LoginActions
             if ($foodicsOrders->isNotEmpty()) {
                 $totalPoints = 0;
                 $targetPoints = (int) ($exists->points ?? 0);
+                $createdPointIds = [];
 
                 foreach ($foodicsOrders as $foodicsOrder) {
                     $points = (int) round($foodicsOrder->points ?? 0);
@@ -133,7 +134,7 @@ trait LoginActions
                         continue;
                     }
 
-                    \App\Models\Customer\CustomerPoint::create([
+                    $pointRow = \App\Models\Customer\CustomerPoint::create([
                         'customer_id' => $customer->id,
                         'order_id'    => $foodicsOrder->id,   // ← linked per order
                         'order_type'  => 'foodics',
@@ -142,6 +143,7 @@ trait LoginActions
                         'ar_content'  => 'تم إضافة النقاط من الطلبات الفوديكس',
                         'en_content'  => 'Points Added From Foodics Orders',
                     ]);
+                    $createdPointIds[] = $pointRow->id;
 
                     // Mark Foodics row as claimed by this customer
                     $foodicsOrder->update(['customer_id' => $customer->id]);
@@ -149,32 +151,35 @@ trait LoginActions
                     $totalPoints += $points;
                 }
 
-                if ($totalPoints > 0) {
-                    $customer->increment('points', $totalPoints);
-                }
-
-                // Keep parity with pre-registration accumulated points.
-                // If per-order rows differ from aggregated total, add/subtract the difference.
-                $diff = $targetPoints - $totalPoints;
-                if ($diff !== 0) {
-                    $type = $diff > 0 ? 'in' : 'out';
-                    $amount = abs($diff);
-
-                    if ($amount > 0) {
-                        if ($type === 'in') {
-                            $customer->increment('points', $amount);
-                        } else {
-                            $customer->decrement('points', $amount);
-                        }
-
+                // Keep parity with pre-registration total without creating a separate adjustment row.
+                if ($targetPoints > 0) {
+                    if ($totalPoints <= 0) {
                         \App\Models\Customer\CustomerPoint::create([
                             'customer_id' => $customer->id,
-                            'amount'      => $amount,
-                            'type'        => $type,
-                            'ar_content'  => 'تسوية نقاط الفوديكس لمطابقة الرصيد السابق',
-                            'en_content'  => 'Foodics points adjustment to match previous balance',
+                            'amount'      => $targetPoints,
+                            'type'        => 'in',
+                            'order_type'  => 'foodics',
+                            'ar_content'  => 'تم إضافة النقاط من الطلبات الفوديكس',
+                            'en_content'  => 'Points Added From Foodics Orders',
                         ]);
+                        $totalPoints = $targetPoints;
+                    } else {
+                        $diff = $targetPoints - $totalPoints;
+                        if ($diff !== 0 && !empty($createdPointIds)) {
+                            $firstPoint = \App\Models\Customer\CustomerPoint::find($createdPointIds[0]);
+                            if ($firstPoint) {
+                                $newAmount = (int) $firstPoint->amount + $diff;
+                                if ($newAmount > 0) {
+                                    $firstPoint->update(['amount' => $newAmount]);
+                                    $totalPoints = $targetPoints;
+                                }
+                            }
+                        }
                     }
+                }
+
+                if ($totalPoints > 0) {
+                    $customer->increment('points', $totalPoints);
                 }
 
                 $exists->delete();
