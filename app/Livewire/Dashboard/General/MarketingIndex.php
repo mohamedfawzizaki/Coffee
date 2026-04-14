@@ -25,6 +25,10 @@ class MarketingIndex extends Component
 
     public function mount()
     {
+        $user = auth('admin')->user();
+        $isSuperAdmin = $user->id == 1;
+        abort_unless($isSuperAdmin || $user->isAbleTo('marketing-create'), 403);
+
         $this->customers_ids = [];
         $this->providers_ids = [];
         // Keep UI + logic in sync (the select options are: customers/new_customers/has_abandoned_carts)
@@ -97,6 +101,10 @@ class MarketingIndex extends Component
 
     public function sendNotification()
     {
+        $user = auth('admin')->user();
+        $isSuperAdmin = $user->id == 1;
+        abort_unless($isSuperAdmin || $user->isAbleTo('marketing-create'), 403);
+
         // Validate the input data
         $rules = [
             'type'    => 'required|in:new_customers,customers,has_abandoned_carts',

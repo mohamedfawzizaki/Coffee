@@ -80,6 +80,10 @@ class CustomerShow extends Component
 
     public function addPoints()
     {
+        $user = auth('admin')->user();
+        $isSuperAdmin = $user->id == 1;
+        abort_unless($isSuperAdmin || $user->isAbleTo('customer-update'), 403);
+
         $this->validateMoney();
 
       CustomerPoint::create([
@@ -105,6 +109,10 @@ class CustomerShow extends Component
 
     public function addMoney()
     {
+        $user = auth('admin')->user();
+        $isSuperAdmin = $user->id == 1;
+        abort_unless($isSuperAdmin || $user->isAbleTo('customer-update'), 403);
+
         $this->validateMoney();
 
            $this->customer->update([

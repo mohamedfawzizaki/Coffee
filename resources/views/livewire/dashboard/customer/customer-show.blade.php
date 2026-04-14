@@ -70,6 +70,7 @@
 
                        <div class="flex-shrink-0">
 
+                            @if(auth('admin')->user()->id == 1 || auth('admin')->user()->isAbleTo('customer-update'))
                             <a href="{{ route('dashboard.customer.edit', $customer->id) }}" class="btn btn-info" wire:navigate><i class="ri-edit-box-line align-bottom"></i> @lang('Edit Profile')</a>
 
                             {{--  <button type="button" class="btn btn-warning" data-bs-toggle="modal" data-bs-target="#myModal"><i class="ri-message-2-line align-bottom me-1"></i> @lang('Send Notification')</button>  --}}
@@ -77,6 +78,7 @@
                             <button type="button" class="btn btn-success" data-bs-toggle="modal" data-bs-target="#addPoints"><i class="ri-coin-line align-bottom me-1"></i> @lang('Add Points')</button>
 
                             <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#addMoney"><i class="ri-wallet-3-line align-bottom me-1"></i> @lang('Add Money to Wallet')</button>
+                            @endif
 
                             <div id="myModal" class="modal fade" tabindex="-1" aria-labelledby="myModalLabel" aria-hidden="true" style="display: none;">
                                 <div class="modal-dialog">

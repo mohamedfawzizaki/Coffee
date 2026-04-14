@@ -20,6 +20,10 @@ class CustomerEdit extends Component
 
     public function mount($id)
     {
+        $user = auth('admin')->user();
+        $isSuperAdmin = $user->id == 1;
+        abort_unless($isSuperAdmin || $user->isAbleTo('customer-update'), 403);
+
         $this->customer = Customer::find($id);
 
         $this->name = $this->customer->name;
@@ -37,6 +41,10 @@ class CustomerEdit extends Component
     }
 
     public function updateCustomer(){
+
+        $user = auth('admin')->user();
+        $isSuperAdmin = $user->id == 1;
+        abort_unless($isSuperAdmin || $user->isAbleTo('customer-update'), 403);
 
         $this->validate([
             'name'    => 'required|string|max:255',

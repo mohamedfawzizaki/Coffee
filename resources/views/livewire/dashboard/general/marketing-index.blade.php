@@ -175,9 +175,11 @@
                     </div>  --}}
 
 
+                            @if(auth('admin')->user()->id == 1 || auth('admin')->user()->isAbleTo('marketing-create'))
                             <div class="card-footer">
                                 <button class="btn btn-primary" type="submit"> @lang('Send Notification') </button>
                             </div>
+                            @endif
                     </form>
                 </div>
             </div>

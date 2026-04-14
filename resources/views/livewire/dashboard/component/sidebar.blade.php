@@ -271,12 +271,14 @@
                 @if ($user->isAbleTo('marketing-read'))
                     <li class="menu-title"><span data-key="t-menu">@lang('Contact Center')</span></li>
 
+                    @if ($user->id == 1 || $user->isAbleTo('marketing-create'))
                     <li class="nav-item">
                         <a class="nav-link menu-link {{ str_starts_with($currentRoute, 'dashboard.marketing.') ? 'active' : '' }}"
                             href="{{ route('dashboard.marketing.index') }}">
                             <i class="ri-advertisement-line"></i> <span>@lang('Marketing')</span>
                         </a>
                     </li>
+                    @endif
 
 
                     <li class="nav-item">
