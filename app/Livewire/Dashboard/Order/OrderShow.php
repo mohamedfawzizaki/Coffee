@@ -28,6 +28,10 @@ class OrderShow extends Component
 
     public function updateStatus()
     {
+        $user = auth('admin')->user();
+        $isSuperAdmin = $user->id == 1;
+        abort_unless($isSuperAdmin || $user->isAbleTo('order-update'), 403);
+
         $this->order->status = $this->status;
 
         $this->order->save();
@@ -39,6 +43,10 @@ class OrderShow extends Component
 
     public function refundItem($itemId)
     {
+        $user = auth('admin')->user();
+        $isSuperAdmin = $user->id == 1;
+        abort_unless($isSuperAdmin || $user->isAbleTo('order-update'), 403);
+
         $item = $this->order->items->firstWhere('id', $itemId);
 
         if (!$item) {

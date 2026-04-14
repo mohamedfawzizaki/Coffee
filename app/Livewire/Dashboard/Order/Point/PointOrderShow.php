@@ -15,6 +15,10 @@ class PointOrderShow extends OrderShow
 
     public function updateStatus()
     {
+        $user = auth('admin')->user();
+        $isSuperAdmin = $user->id == 1;
+        abort_unless($isSuperAdmin || $user->isAbleTo('order-update'), 403);
+
         $this->order->status = $this->status;
 
         $this->order->save();

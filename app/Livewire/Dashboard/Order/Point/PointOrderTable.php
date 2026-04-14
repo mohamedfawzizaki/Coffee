@@ -12,6 +12,7 @@ use Rappasoft\LaravelLivewireTables\Views\Filters\SelectFilter;
 
 class PointOrderTable extends BaseTable
 {
+    protected $permissionName = 'order';
 
     protected $route         = 'dashboard.pointorder';
 

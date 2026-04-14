@@ -105,7 +105,7 @@
                                             {{ $item->total }}
                                         </td>
                                         <td class="text-center">
-                                            @if (!$item->is_refunded)
+                                            @if (!$item->is_refunded && (auth('admin')->user()->id == 1 || auth('admin')->user()->isAbleTo('order-update')))
                                                 <button wire:click="refundItem({{ $item->id }})"
                                                     wire:confirm="@lang('Are you sure you want to refund this item? Customer points will be deducted.')"
                                                     class="btn btn-sm btn-outline-danger">
@@ -244,7 +244,7 @@
 
                     </div>
 
-                    @if ($order->status !== 'completed' && $order->status !== 'cancelled')
+                    @if ($order->status !== 'completed' && $order->status !== 'cancelled' && (auth('admin')->user()->id == 1 || auth('admin')->user()->isAbleTo('order-update')))
 
                     <div class="card-body">
 
@@ -283,9 +283,6 @@
 
                         <div class="d-flex">
                             <h5 class="card-title flex-grow-1 mb-0">@lang('Branch Details')</h5>
-                            <div class="flex-shrink-0">
-                                <a href="{{ route('dashboard.branch.show', $order->branch->id) }}" class="link-secondary" wire:navigate>@lang('View Profile')</a>
-                            </div>
                         </div>
 
                     </div>
@@ -345,9 +342,6 @@
 
                         <div class="d-flex">
                             <h5 class="card-title flex-grow-1 mb-0">@lang('Customer Details')</h5>
-                            <div class="flex-shrink-0">
-                                <a href="{{ route('dashboard.customer.show', $order->customer->id) }}" class="link-secondary" wire:navigate>@lang('View Profile')</a>
-                            </div>
                         </div>
 
                     </div>
