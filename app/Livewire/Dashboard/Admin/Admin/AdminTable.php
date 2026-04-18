@@ -52,7 +52,9 @@ class AdminTable extends BaseTable
             })->html()->searchable()->sortable(),
 
             Column::make('Status', 'status')->format(function ($value, $column, $row) {
-               return $this->active($value, $column);
+                $user = auth('admin')->user();
+                $canToggle = $user->id === 1 || $user->isAbleTo('admin-update') || $user->isAbleTo('admin-create');
+                return $this->active($value, $column, !$canToggle);
             })->sortable(),
 
             Column::make('Actions', 'id')->format(function ($value, $column, $row) {
@@ -152,5 +154,19 @@ class AdminTable extends BaseTable
         $this->dispatch('refresh');
     }
 
+    #[On('toggleStatus')]
+    public function toggleStatus($id)
+    {
+        $user = auth('admin')->user();
+        if ($user->id !== 1 && !$user->isAbleTo('admin-update') && !$user->isAbleTo('admin-create')) {
+            $this->dispatch('showAlert', [
+                'type'    => 'error',
+                'message' => __('Unauthorized: You do not have permission to change the status.'),
+            ]);
+            return;
+        }
+
+        parent::toggleStatus($id);
+    }
 
 }

@@ -98,13 +98,13 @@ class BaseTable extends DataTableComponent
         ]);
     }
 
-    protected function active($active, $query)
+    protected function active($active, $query, $readOnly = false)
     {
-
         return view('inc.script.livewire.active')->with([
-            'active' => $active,
-            'id' => $query->id,
-            'model' => $this->model,
+            'active'    => $active,
+            'id'        => $query->id,
+            'model'     => $this->model,
+            'readOnly'  => $readOnly,
         ]);
     }
 

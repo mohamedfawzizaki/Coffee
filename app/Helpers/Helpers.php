@@ -227,22 +227,22 @@ function customerMoneyToPoint($id, $money)
         return 0;
     }
 
-    $card = $customer->card;
+    // $card = $customer->card;
 
     // Fallback to first card if customer has no card
-    if (!$card) {
-        $card = CustomerCard::orderBy('id', 'asc')->first();
-    }
+    // if (!$card) {
+        // $card = CustomerCard::orderBy('id', 'asc')->first();
+    // }
 
     $moneyToPointRatio = 0;
 
-    if ($card && $card->money_to_point > 0) {
-        $moneyToPointRatio = $card->money_to_point;
-    } else {
+    // if ($card && $card->money_to_point > 0) {
+        // $moneyToPointRatio = $card->money_to_point;
+    // } else {
         // Ultimate fallback to global settings
         $setting = \App\Models\General\Setting::first();
         $moneyToPointRatio = $setting->money_to_point ?? 1;
-    }
+    // }
 
     if ($moneyToPointRatio <= 0) {
         return 0;

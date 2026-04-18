@@ -1,10 +1,21 @@
-<button wire:click="toggleStatus({{ $id }})" type="button" class="btn btn-sm @if ($active == 0) btn-outline-danger @elseif ($active == 1) btn-outline-success @endif  waves-effect waves-light px-4 py-2 fs-7 text-nowrap">
-    @if ($active == 0)
-        @lang('Inactive') <i class="mdi mdi-close"></i>
-    @elseif ($active == 1)
-        @lang('Active') <i class="mdi mdi-check"></i>
-    @endif
-</button>
+@php $readOnly = $readOnly ?? false; @endphp
+@if (!$readOnly)
+    <button wire:click="toggleStatus({{ $id }})" type="button" class="btn btn-sm @if ($active == 0) btn-outline-danger @elseif ($active == 1) btn-outline-success @endif  waves-effect waves-light px-4 py-2 fs-7 text-nowrap">
+        @if ($active == 0)
+            @lang('Inactive') <i class="mdi mdi-close"></i>
+        @elseif ($active == 1)
+            @lang('Active') <i class="mdi mdi-check"></i>
+        @endif
+    </button>
+@else
+    <span class="badge @if ($active == 0) bg-danger-subtle text-danger @elseif ($active == 1) bg-success-subtle text-success @endif px-3 py-2 fs-7">
+        @if ($active == 0)
+            @lang('Inactive') <i class="mdi mdi-close"></i>
+        @elseif ($active == 1)
+            @lang('Active') <i class="mdi mdi-check"></i>
+        @endif
+    </span>
+@endif
 
 {{--  <div class="form-check form-switch">
     <input
