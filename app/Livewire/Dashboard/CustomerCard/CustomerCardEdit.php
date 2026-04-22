@@ -22,6 +22,8 @@ class CustomerCardEdit extends Component
 
     public function mount($id)
     {
+        abort_unless(auth('admin')->user()->isAbleTo('setting-read'), 403);
+
         $this->customerCard = CustomerCard::findOrFail($id);
 
         $this->ar['title'] = $this->customerCard->translate('ar')->title;
@@ -39,6 +41,8 @@ class CustomerCardEdit extends Component
 
     public function updateCustomerCard()
     {
+        abort_unless(auth('admin')->user()->isAbleTo('setting-update'), 403);
+
         $this->validate([
             'ar.title'       => 'required|string|max:255',
             'en.title'       => 'required|string|max:255',

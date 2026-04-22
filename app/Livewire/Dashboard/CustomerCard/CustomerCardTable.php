@@ -13,6 +13,8 @@ class CustomerCardTable extends BaseTable
 {
     protected $actionDisplay = ['edit', 'delete'];
 
+    protected $permissionName = 'setting';
+
     protected $route         = 'dashboard.customercard';
 
     public $model            = CustomerCard::class;

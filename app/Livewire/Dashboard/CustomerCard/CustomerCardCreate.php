@@ -19,6 +19,12 @@ class CustomerCardCreate extends Component
     public $image;
     public $point_to_money;
     public $content;
+
+    public function mount()
+    {
+        abort_unless(auth('admin')->user()->isAbleTo('setting-read'), 403);
+    }
+
     #[Title('Create Customer Card')]
     public function render()
     {
@@ -27,6 +33,8 @@ class CustomerCardCreate extends Component
 
     public function createCustomerCard()
     {
+        abort_unless(auth('admin')->user()->isAbleTo('setting-update'), 403);
+
         $this->validate([
             'ar.title'       => 'required|string|max:255',
             'en.title'       => 'required|string|max:255',

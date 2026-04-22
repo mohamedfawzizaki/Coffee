@@ -113,9 +113,11 @@
 
                             </div>
 
+                            @if(auth('admin')->user()->isAbleTo('setting-update'))
                             <div class="modal-footer">
                                 <button type="submit" class="btn btn-primary"> @lang('Save') </button>
                             </div>
+                            @endif
 
                         </form>
 

@@ -6,7 +6,7 @@
             @lang('Website Title')
         </label>
         <input type="text" class="form-control @error('title') is-invalid @enderror" id="form-text" placeholder=""
-            wire:model="title">
+            wire:model="title" @if(!auth('admin')->user()->isAbleTo('setting-update')) readonly @endif>
         @error('title')
             <div class="invalid-feedback">{{ $message }}</div>
         @enderror
@@ -18,7 +18,7 @@
             @lang('Phone Number')
         </label>
         <input type="text" class="form-control @error('phone') is-invalid @enderror" id="form-password"
-            placeholder="" wire:model="phone">
+            placeholder="" wire:model="phone" @if(!auth('admin')->user()->isAbleTo('setting-update')) readonly @endif>
         @error('phone')
             <div class="invalid-feedback">{{ $message }}</div>
         @enderror
@@ -30,7 +30,7 @@
             @lang('Whatsapp Number')
         </label>
         <input type="text" class="form-control @error('whatsapp') is-invalid @enderror" id="form-password"
-            placeholder="" wire:model="whatsapp">
+            placeholder="" wire:model="whatsapp" @if(!auth('admin')->user()->isAbleTo('setting-update')) readonly @endif>
         @error('whatsapp')
             <div class="invalid-feedback">{{ $message }}</div>
         @enderror
@@ -43,7 +43,7 @@
             @lang('Email')
         </label>
         <input type="email" class="form-control @error('email') is-invalid @enderror" id="form-password"
-            placeholder="" wire:model="email">
+            placeholder="" wire:model="email" @if(!auth('admin')->user()->isAbleTo('setting-update')) readonly @endif>
         @error('email')
             <div class="invalid-feedback">{{ $message }}</div>
         @enderror
@@ -56,7 +56,7 @@
             @lang('Address')
         </label>
         <input type="text" class="form-control @error('address') is-invalid @enderror" id="form-password"
-            placeholder="" wire:model="address">
+            placeholder="" wire:model="address" @if(!auth('admin')->user()->isAbleTo('setting-update')) readonly @endif>
         @error('address')
             <div class="invalid-feedback">{{ $message }}</div>
         @enderror
@@ -69,7 +69,7 @@
             @lang('Website Logo')
         </label>
         <input type="file" class="form-control @error('logo') is-invalid @enderror" id="form-password"
-            data-allowed-file-extensions="png jpg jpeg" data-default-file="" placeholder="" wire:model="logo">
+            data-allowed-file-extensions="png jpg jpeg" data-default-file="" placeholder="" wire:model="logo" @if(!auth('admin')->user()->isAbleTo('setting-update')) disabled @endif>
         @error('logo')
             <div class="invalid-feedback">{{ $message }}</div>
         @enderror
@@ -95,7 +95,7 @@
             @lang('Favicon')
         </label>
         <input type="file" class="form-control @error('favicon') is-invalid @enderror" id="form-password"
-            data-allowed-file-extensions="png jpg jpeg" data-default-file="" placeholder="" wire:model="favicon">
+            data-allowed-file-extensions="png jpg jpeg" data-default-file="" placeholder="" wire:model="favicon" @if(!auth('admin')->user()->isAbleTo('setting-update')) disabled @endif>
         @error('favicon')
             <div class="invalid-feedback">{{ $message }}</div>
         @enderror
@@ -115,8 +115,10 @@
 
     </div>
 
+    @if(auth('admin')->user()->isAbleTo('setting-update'))
     <div class="mb-3">
         <button class="btn btn-primary" wire:click="save" wire:loading.attr="disabled"
             wire:target="logo,favicon">@lang('Save')</button>
     </div>
+    @endif
 </div>

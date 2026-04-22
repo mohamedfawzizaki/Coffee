@@ -10,6 +10,11 @@ class FoodicsNumberIndex extends Component
     public $number;
     public $showModal = false;
 
+    public function mount()
+    {
+        abort_unless(auth('admin')->user()->isAbleTo('setting-read'), 403);
+    }
+
     protected $rules = [
         'number' => 'required|string|max:255|unique:banned_numbers,number'
     ];
@@ -22,6 +27,7 @@ class FoodicsNumberIndex extends Component
 
     public function openModal()
     {
+        abort_unless(auth('admin')->user()->isAbleTo('setting-update'), 403);
         $this->showModal = true;
         $this->resetValidation();
         $this->reset('number');
@@ -36,6 +42,7 @@ class FoodicsNumberIndex extends Component
 
     public function addNumber()
     {
+        abort_unless(auth('admin')->user()->isAbleTo('setting-create'), 403);
         $this->validate();
 
         BannedNumber::create([

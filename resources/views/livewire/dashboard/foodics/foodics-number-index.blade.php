@@ -20,9 +20,11 @@
                 <div class="card-header">
                     <div class="d-flex justify-content-between align-items-center">
                         <h5 class="card-title mb-0">@lang('Banned Numbers List')</h5>
+                        @if(auth('admin')->user()->isAbleTo('setting-create'))
                         <button type="button" class="btn btn-primary" wire:click="openModal">
                             <i class="ri-add-line me-1"></i>@lang('Add New Number')
                         </button>
+                        @endif
                     </div>
                 </div>
                 <div class="card-body">
@@ -58,6 +60,7 @@
                             <div class="modal-footer">
                                 <button type="button" class="btn btn-secondary"
                                     wire:click="closeModal">@lang('Close')</button>
+                                @if(auth('admin')->user()->isAbleTo('setting-update'))
                                 <button type="submit" class="btn btn-primary" wire:loading.attr="disabled">
                                     <span wire:loading.remove>
                                         <i class="ri-save-line me-1"></i>@lang('Save Number')
@@ -66,6 +69,7 @@
                                         <i class="ri-loader-4-line me-1 spin"></i>@lang('Saving...')
                                     </span>
                                 </button>
+                                @endif
                             </div>
                         </form>
                     </div>

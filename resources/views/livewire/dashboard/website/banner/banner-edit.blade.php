@@ -97,6 +97,7 @@
 
                             </div>
 
+                            @if(auth('admin')->user()->isAbleTo('setting-update'))
                             <div class="modal-footer">
                                 <button type="submit" class="btn btn-primary" wire:loading.attr="disabled"
                                     wire:target="newArImage,newEnImage,link"> @lang('Save') </button>
@@ -104,6 +105,7 @@
                                     @lang('Uploading...')
                                 </span>
                             </div>
+                            @endif
 
                         </form>
 

@@ -47,6 +47,8 @@ class SettingIndex extends Component
 
     public function updatedMaintenance(): void
     {
+        abort_unless(auth('admin')->user()->isAbleTo('setting-update'), 403);
+
         // Ensure we always store 0/1
         $this->maintenance = (int) $this->maintenance;
 
@@ -63,6 +65,8 @@ class SettingIndex extends Component
 
     public function mount()
     {
+        abort_unless(auth('admin')->user()->isAbleTo('setting-read'), 403);
+
         $setting = Setting::first();
 
         $this->title = $setting->title;
@@ -91,6 +95,7 @@ class SettingIndex extends Component
 
     public function save()
     {
+        abort_unless(auth('admin')->user()->isAbleTo('setting-update'), 403);
 
         $nullable = 'nullable|sometimes';
 

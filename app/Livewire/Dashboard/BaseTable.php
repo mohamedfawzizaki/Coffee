@@ -333,6 +333,12 @@ class BaseTable extends DataTableComponent
     #[On('deleteConfirmed')]
     public function deleteConfirmed($id)
     {
+        $user = auth('admin')->user();
+        if ($user->id != 1 && $this->permissionName && !$user->isAbleTo($this->permissionName . '-delete')) {
+            session()->flash('error', __('Unauthorized'));
+            return;
+        }
+
         if (isset($this->model)) {
             $this->model::withoutGlobalScopes()->find($id)->delete();
             session()->flash('success', __('Deleted successfully'));
@@ -345,6 +351,12 @@ class BaseTable extends DataTableComponent
     #[On('restoreConfirmed')]
     public function restoreConfirmed($id)
     {
+        $user = auth('admin')->user();
+        if ($user->id != 1 && $this->permissionName && !$user->isAbleTo($this->permissionName . '-update')) {
+            session()->flash('error', __('Unauthorized'));
+            return;
+        }
+
         if (isset($this->model)) {
             $this->model::withTrashed()->find($id)->restore();
             session()->flash('success', __('Restored successfully'));
@@ -397,6 +409,15 @@ class BaseTable extends DataTableComponent
     #[On('toggleStatus')]
     public function toggleStatus($id)
     {
+        $user = auth('admin')->user();
+        if ($user->id != 1 && $this->permissionName && !$user->isAbleTo($this->permissionName . '-update')) {
+            $this->dispatch('showAlert', [
+                'type' => 'error',
+                'message' => __('Unauthorized')
+            ]);
+            return;
+        }
+
         try {
             $record = $this->model::withoutGlobalScopes()->findOrFail($id);
             $newStatus = !$record->status;

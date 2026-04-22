@@ -13,6 +13,8 @@ class FoodicsNumberTable extends BaseTable
 {
     protected $actionDisplay = ['delete'];
 
+    protected $permissionName = 'setting';
+
     protected $route         = 'dashboard.foodics-number';
 
     public $model            = BannedNumber::class;

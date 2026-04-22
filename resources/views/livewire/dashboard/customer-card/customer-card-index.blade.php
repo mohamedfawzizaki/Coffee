@@ -20,9 +20,11 @@
                 <div class="card">
                     <div class="card-header">
                         <div class="d-flex align-items-center flex-wrap gap-2">
+                            @if(auth('admin')->user()->isAbleTo('setting-update'))
                             <a href="{{ route('dashboard.customercard.create') }}" class="btn btn-primary add-btn" wire:navigate>
                                 <i class="ri-add-fill me-1 align-bottom"></i> @lang('Add Customer Card')
                             </a>
+                            @endif
                         </div>
                     </div>
                 </div>

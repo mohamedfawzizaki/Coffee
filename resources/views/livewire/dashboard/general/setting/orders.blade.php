@@ -11,7 +11,7 @@
             </label>
 
             <input type="number" class="form-control @error('distance') is-invalid @enderror" id="form-password"
-                placeholder="" wire:model="distance">
+                placeholder="" wire:model="distance" @if(!auth('admin')->user()->isAbleTo('setting-update')) readonly @endif>
             @error('distance')
                 <div class="invalid-feedback">{{ $message }}</div>
             @enderror
@@ -30,7 +30,7 @@
             </label>
 
             <input type="number" class="form-control @error('daily_login_points') is-invalid @enderror"
-                id="form-password" placeholder="" wire:model="daily_login_points">
+                id="form-password" placeholder="" wire:model="daily_login_points" @if(!auth('admin')->user()->isAbleTo('setting-update')) readonly @endif>
             @error('daily_login_points')
                 <div class="invalid-feedback">{{ $message }}</div>
             @enderror
@@ -47,7 +47,7 @@
             </label>
 
             <input type="number" class="form-control @error('friend_invitation_points') is-invalid @enderror"
-                id="form-password" placeholder="" wire:model="friend_invitation_points">
+                id="form-password" placeholder="" wire:model="friend_invitation_points" @if(!auth('admin')->user()->isAbleTo('setting-update')) readonly @endif>
             @error('friend_invitation_points')
                 <div class="invalid-feedback">{{ $message }}</div>
             @enderror
@@ -66,7 +66,7 @@
             </label>
 
             <input type="number" class="form-control @error('first_register_point') is-invalid @enderror"
-                id="form-password" placeholder="" wire:model="first_register_point">
+                id="form-password" placeholder="" wire:model="first_register_point" @if(!auth('admin')->user()->isAbleTo('setting-update')) readonly @endif>
             @error('first_register_point')
                 <div class="invalid-feedback">{{ $message }}</div>
             @enderror
@@ -74,8 +74,10 @@
         </div>
 
 
+        @if(auth('admin')->user()->isAbleTo('setting-update'))
         <div class="mb-3">
             <button class="btn btn-primary" wire:click="save">@lang('Save')</button>
         </div>
+        @endif
 
     </div>

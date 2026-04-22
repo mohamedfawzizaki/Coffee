@@ -59,9 +59,11 @@
 
                         </div>
 
+                        @if(auth('admin')->user()->isAbleTo('setting-update'))
                         <div class="card-footer">
                             <button class="btn btn-primary" type="submit"> @lang('Save') </button>
                         </div>
+                        @endif
                     </form>
                 </div>
             </div>
@@ -106,6 +108,10 @@
                         ['fontsize', ['fontsize']],
                         ['style', ['h1', 'h2', 'h3', 'h4', 'h5', 'h6']]
                     ],
+                    @if(!auth('admin')->user()->isAbleTo('setting-update'))
+                    airMode: false,
+                    disableDragAndDrop: true,
+                    @endif
                     callbacks: {
                         onChange: function(contents, $editable) {
                             @this.set(locale + '.content', contents);
@@ -119,6 +125,10 @@
                         }
                     }
                 });
+
+                @if(!auth('admin')->user()->isAbleTo('setting-update'))
+                $editor.summernote('disable');
+                @endif
             });
         }
 

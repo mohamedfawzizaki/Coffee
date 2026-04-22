@@ -16,6 +16,11 @@ class BannerCreate extends Component
 
     public $link;
 
+    public function mount()
+    {
+        abort_unless(auth('admin')->user()->isAbleTo('setting-read'), 403);
+    }
+
     #[Title('Create Banner')]
     public function render()
     {
@@ -24,6 +29,8 @@ class BannerCreate extends Component
 
     public function createBanner()
     {
+        abort_unless(auth('admin')->user()->isAbleTo('setting-create'), 403);
+
         $this->validate([
             'ar_image' => 'required|image|mimes:jpeg,png,jpg,gif,svg|max:2048',
             'en_image' => 'required|image|mimes:jpeg,png,jpg,gif,svg|max:2048',

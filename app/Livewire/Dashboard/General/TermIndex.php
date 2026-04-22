@@ -17,6 +17,7 @@ class TermIndex extends Component
 
     public function mount()
     {
+        abort_unless(auth('admin')->user()->isAbleTo('setting-read'), 403);
         $this->terms = Term::first();
 
         if ($this->terms) {
@@ -34,6 +35,8 @@ class TermIndex extends Component
 
     public function saveContentAndSaveTerms($arContent = null, $enContent = null)
     {
+        abort_unless(auth('admin')->user()->isAbleTo('setting-update'), 403);
+
         // Update content from JavaScript if provided
         if ($arContent !== null) {
             $this->ar['content'] = $arContent;
@@ -47,6 +50,8 @@ class TermIndex extends Component
 
     public function saveTerms()
     {
+        abort_unless(auth('admin')->user()->isAbleTo('setting-update'), 403);
+
         $this->validate([
             'ar.content' => 'required',
             'en.content' => 'required',

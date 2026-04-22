@@ -10,7 +10,8 @@
             </span>
         </label>
 
-        <select class="form-select @error('maintenance') is-invalid @enderror" id="maintenance" wire:model="maintenance">
+        <select class="form-select @error('maintenance') is-invalid @enderror" id="maintenance" wire:model="maintenance" 
+            @if(!auth('admin')->user()->isAbleTo('setting-update')) disabled @endif>
             <option value="0">@lang('Disabled')</option>
             <option value="1">@lang('Enabled')</option>
         </select>
@@ -20,8 +21,10 @@
 
 
 
+@if(auth('admin')->user()->isAbleTo('setting-update'))
 <div class="mb-3">
     <button class="btn btn-primary" wire:click="save">@lang('Save')</button>
 </div>
+@endif
 
 </div>

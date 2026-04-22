@@ -16,6 +16,7 @@ class CheckPermission
         // More specific prefixes should come first to avoid incorrect matches
         'dashboard.unregisteredcustomer' => 'customer',
         'dashboard.customer.wallet'      => 'finance',
+        'dashboard.customercard'         => 'setting',
         'dashboard.customer'             => 'customer',
         'dashboard.pointorder'           => 'order',
         'dashboard.point'                => 'customer',
@@ -35,7 +36,6 @@ class CheckPermission
         'dashboard.contact'              => 'marketing',
         'dashboard.admin'                => 'admin',
         'dashboard.role'                 => 'admin',
-        'dashboard.customercard'         => 'setting',
         'dashboard.birthday'             => 'setting',
         'dashboard.terms'                => 'setting',
         'dashboard.foodics-numbers'      => 'setting',

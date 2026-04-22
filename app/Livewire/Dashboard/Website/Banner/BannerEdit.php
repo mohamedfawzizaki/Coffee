@@ -22,6 +22,8 @@ class BannerEdit extends Component
 
     public function mount($id)
     {
+        abort_unless(auth('admin')->user()->isAbleTo('setting-read'), 403);
+
         $this->banner = Banner::find($id);
 
         $this->link = $this->banner->link;
@@ -37,6 +39,8 @@ class BannerEdit extends Component
 
     public function updateBanner()
     {
+        abort_unless(auth('admin')->user()->isAbleTo('setting-update'), 403);
+
         $this->validate([
             'newArImage' => 'nullable|image|mimes:jpeg,png,jpg,gif,svg|max:2048',
             'newEnImage' => 'nullable|image|mimes:jpeg,png,jpg,gif,svg|max:2048',
